@@ -181,17 +181,14 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang })
       return;
     }
 
-    const found = SERVER_USERS_REGISTRY.find(u => u.chatNumber === formatted);
-    if (found) {
-      setSearchedUserResult(found);
+    const foundInServer = SERVER_USERS_REGISTRY.find(u => u.chatNumber === formatted);
+    const foundInContacts = contacts.find(c => c.chatNumber === formatted);
+
+    if (foundInServer) {
+      setSearchedUserResult(foundInServer);
       setSearchNotFound(false);
-    } else if (formatted.length >= 8) {
-      const dynUser: ServerUser = {
-        chatNumber: formatted,
-        name: `کاربر شبکه (${formatted.slice(-4)})`,
-        isOnline: true,
-      };
-      setSearchedUserResult(dynUser);
+    } else if (foundInContacts) {
+      setSearchedUserResult({ chatNumber: foundInContacts.chatNumber, name: foundInContacts.name, isOnline: true });
       setSearchNotFound(false);
     } else {
       setSearchedUserResult(null);

@@ -4,7 +4,7 @@ import { Button } from '../Button';
 import { Asset, UserState } from '../../types';
 import { Translation, LanguageCode } from '../../translations';
 import { formatNumber, formatTokenPrice } from '../../utils';
-import { LiveMarketPrices, UT_BASE_FLOOR_PRICE } from '../../services/priceService';
+import { LiveMarketPrices } from '../../services/priceService';
 import { 
   Wallet, 
   ShoppingCart, 
@@ -90,9 +90,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               </span>
               <span className="font-bold text-sky-200 font-mono" dir="ltr">
                 1 UT = ${formatTokenPrice(marketPrices.UT, lang)} USD
-              </span>
-              <span className="text-[11px] text-emerald-200/80 bg-black/20 px-2 py-0.5 rounded-md font-mono" dir="ltr">
-                (Base: ${formatTokenPrice(UT_BASE_FLOOR_PRICE, lang)})
               </span>
             </div>
           </div>
