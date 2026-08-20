@@ -1,0 +1,8 @@
+{
+  "name": "Wallet UT",
+  "description": "A high-security 3D crypto and precious metals wallet featuring the reserve-backed UT token (backed by Gold, Silver, Palladium, Bitcoin, Ethereum, Tron, Polygon) and dynamic equity stock treasury system.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
