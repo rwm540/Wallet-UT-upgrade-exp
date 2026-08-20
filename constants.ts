@@ -9,7 +9,7 @@ export const INITIAL_TREASURY_RESERVES: Record<string, number> = {
   GOLD: 1200,       // 1,200 Troy Ounces of Gold
   SILVER: 25000,    // 25,000 Troy Ounces of Silver
   PALLADIUM: 800,   // 800 Troy Ounces of Palladium
-  UT: 3000000,      // 3,000,000 Circulating UT
+  UT: 1000000000,   // 1,000,000,000 Circulating & Tradable UT (1 Billion)
 };
 
 export const MOCK_PRICES: Record<string, number> = { ...BASELINE_PRICES };
@@ -20,62 +20,71 @@ export const ASSET_META: Record<string, {
   category: AssetCategory;
   unit: string;
   fullName: string;
+  pairSymbol: string;
 }> = {
   UT: { 
     color: '#2563eb', 
     symbol: 'UT', 
     category: 'native', 
     unit: 'UT', 
-    fullName: 'UT Backed Token' 
+    fullName: 'UT(utility token)',
+    pairSymbol: 'UT'
   },
   BTC: { 
     color: '#F7931A', 
     symbol: '₿', 
     category: 'crypto', 
     unit: 'BTC', 
-    fullName: 'Bitcoin' 
+    fullName: 'Bitcoin',
+    pairSymbol: 'BTC'
   },
   ETH: { 
     color: '#627EEA', 
     symbol: 'Ξ', 
     category: 'crypto', 
     unit: 'ETH', 
-    fullName: 'Ethereum' 
+    fullName: 'Ethereum',
+    pairSymbol: 'ETH'
   },
   TRX: { 
     color: '#FF0013', 
     symbol: 'TRX', 
     category: 'crypto', 
     unit: 'TRX', 
-    fullName: 'Tron' 
+    fullName: 'Tron',
+    pairSymbol: 'TRX'
   },
   MATIC: { 
     color: '#8247E5', 
     symbol: 'POL', 
     category: 'crypto', 
-    unit: 'MATIC', 
-    fullName: 'Polygon (MATIC)' 
+    unit: 'POL', 
+    fullName: 'Polygon (MATIC)',
+    pairSymbol: 'POL'
   },
   GOLD: { 
     color: '#EAB308', 
     symbol: 'Au', 
     category: 'metals', 
     unit: 'oz', 
-    fullName: 'Gold (XAU)' 
+    fullName: 'Gold (XAU)',
+    pairSymbol: 'Gold'
   },
   SILVER: { 
     color: '#94A3B8', 
     symbol: 'Ag', 
     category: 'metals', 
     unit: 'oz', 
-    fullName: 'Silver (XAG)' 
+    fullName: 'Silver (XAG)',
+    pairSymbol: 'Silver'
   },
   PALLADIUM: { 
     color: '#06B6D4', 
     symbol: 'Pd', 
     category: 'metals', 
     unit: 'oz', 
-    fullName: 'Palladium (XPD)' 
+    fullName: 'Palladium (XPD)',
+    pairSymbol: 'Palladium'
   },
 };
 
@@ -103,16 +112,10 @@ export const generateInitialAssets = (uniqueUserKey: string, currentPrices: Reco
     const fullHash = (BigInt(Math.abs(h1)) << 32n | BigInt(Math.abs(h2))).toString(16).toUpperCase();
     const cleanHash = "0x" + fullHash.substring(0, 10).padStart(10, '0');
     
-    // Starting balance (Clean demo distribution)
+    // Starting balance: User wallet holds strictly UT
     let initialBalance = 0;
-    if (key === 'UT') initialBalance = 2500;
-    else if (key === 'BTC') initialBalance = 0.08;
-    else if (key === 'ETH') initialBalance = 1.50;
-    else if (key === 'TRX') initialBalance = 5500;
-    else if (key === 'MATIC') initialBalance = 1200;
-    else if (key === 'GOLD') initialBalance = 3.0;   // 3.0 oz Gold
-    else if (key === 'SILVER') initialBalance = 50.0; // 50 oz Silver
-    else if (key === 'PALLADIUM') initialBalance = 1.5; // 1.5 oz Palladium
+    if (key === 'UT') initialBalance = 500000; // 500,000 UT stored in user's wallet
+    else initialBalance = 0; // Other assets are reserve backings in treasury, user holds UT
 
     return {
       id: key,

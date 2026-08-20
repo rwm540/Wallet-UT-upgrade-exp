@@ -1,5 +1,5 @@
 export enum CurrencyType {
-  UT = 'UT Token',
+  UT = 'UT',
   BTC = 'Bitcoin',
   ETH = 'Ethereum',
   TRX = 'Tron',

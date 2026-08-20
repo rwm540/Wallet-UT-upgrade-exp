@@ -22,6 +22,10 @@ export interface PriceChanges24h {
   UT: number;
 }
 
+// Base initial floor price requested by user ($0.0000001 USD)
+export const UT_BASE_FLOOR_PRICE = 0.0000001;
+export const UT_TOTAL_SUPPLY = 1000000000; // 1,000,000,000 UT (1 Billion)
+
 // Highly accurate real market baseline prices (USD)
 export const BASELINE_PRICES: LiveMarketPrices = {
   BTC: 96540.00,
@@ -31,7 +35,7 @@ export const BASELINE_PRICES: LiveMarketPrices = {
   GOLD: 2924.80,      // Real spot price per oz
   SILVER: 33.45,      // Real spot price per oz
   PALLADIUM: 1028.60, // Real spot price per oz
-  UT: 3.50,          // Calculated dynamically based on reserves
+  UT: 0.00969051,     // Algorithmic 100% Backed price ($9,690,515 / 1,000,000,000 UT)
 };
 
 export const BASELINE_CHANGES_24H: PriceChanges24h = {
@@ -42,23 +46,25 @@ export const BASELINE_CHANGES_24H: PriceChanges24h = {
   GOLD: +0.76,
   SILVER: +1.15,
   PALLADIUM: +0.38,
-  UT: +3.12,
+  UT: +4.85,
 };
 
 /**
- * Calculates UT price directly from current treasury reserves and circulating supply (100% Vault Backed)
+ * Calculates UT price directly from current treasury reserves and 1B supply (100% Vault Backed)
  */
 export const calculateUTBackedPrice = (
   reserves: Record<string, number>,
   prices: Record<string, number>,
-  circulatingUT: number = 3000000
+  circulatingUT: number = UT_TOTAL_SUPPLY
 ): {
   utPrice: number;
   totalReserveValueUSD: number;
-  reserveBreakdown: { id: string; amount: number; valueUSD: number; percentage: number }[];
+  reserveBreakdown: { id: string; amount: number; valueUSD: number; percentage: number; impactPerTokenUSD: number }[];
+  baseFloorPrice: number;
+  backingMultiplier: number;
 } => {
   let totalReserveValueUSD = 0;
-  const breakdown: { id: string; amount: number; valueUSD: number; percentage: number }[] = [];
+  const breakdown: { id: string; amount: number; valueUSD: number; percentage: number; impactPerTokenUSD: number }[] = [];
 
   const backingAssetKeys = ['BTC', 'ETH', 'TRX', 'MATIC', 'GOLD', 'SILVER', 'PALLADIUM'];
 
@@ -71,7 +77,8 @@ export const calculateUTBackedPrice = (
       id: key,
       amount,
       valueUSD,
-      percentage: 0
+      percentage: 0,
+      impactPerTokenUSD: circulatingUT > 0 ? valueUSD / circulatingUT : 0
     });
   }
 
@@ -82,14 +89,17 @@ export const calculateUTBackedPrice = (
     });
   }
 
-  // UT price = Vault Collateral / Circulating UT Supply
-  const rawPrice = circulatingUT > 0 ? totalReserveValueUSD / circulatingUT : 3.50;
-  const utPrice = Math.max(0.1, Number(rawPrice.toFixed(4)));
+  // UT price = Vault Collateral / 1 Billion UT Supply (backed by physical & crypto reserves)
+  const rawPrice = circulatingUT > 0 ? (totalReserveValueUSD / circulatingUT) : UT_BASE_FLOOR_PRICE;
+  const utPrice = Math.max(UT_BASE_FLOOR_PRICE, rawPrice);
+  const backingMultiplier = UT_BASE_FLOOR_PRICE > 0 ? utPrice / UT_BASE_FLOOR_PRICE : 1;
 
   return {
     utPrice,
     totalReserveValueUSD,
-    reserveBreakdown: breakdown
+    reserveBreakdown: breakdown,
+    baseFloorPrice: UT_BASE_FLOOR_PRICE,
+    backingMultiplier
   };
 };
 

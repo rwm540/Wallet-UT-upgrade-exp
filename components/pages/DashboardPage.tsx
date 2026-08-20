@@ -3,8 +3,8 @@ import { AssetCard } from '../AssetCard';
 import { Button } from '../Button';
 import { Asset, UserState } from '../../types';
 import { Translation, LanguageCode } from '../../translations';
-import { formatNumber } from '../../utils';
-import { LiveMarketPrices } from '../../services/priceService';
+import { formatNumber, formatTokenPrice } from '../../utils';
+import { LiveMarketPrices, UT_BASE_FLOOR_PRICE } from '../../services/priceService';
 import { 
   Wallet, 
   ShoppingCart, 
@@ -62,27 +62,39 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 <Wallet className="w-5 h-5" />
               </div>
               <span className="text-xs font-black text-emerald-100 uppercase tracking-wider">
-                {t.totalNetWorth} (ارزش کل دارایی‌ها)
+                موجودی کیف پول (صرفاً UT)
               </span>
             </div>
             
             <div className="flex items-baseline gap-3">
               <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight" dir="ltr">
-                ${formatNumber(totalNetWorthUSD, lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {formatNumber(nativeAsset?.balance || 0, lang, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
               </h1>
-              <span className="text-xs font-black text-emerald-900 bg-emerald-200/90 border border-emerald-300 px-2.5 py-1 rounded-lg">
-                USD
+              <span className="text-xs font-black text-emerald-950 bg-white/90 border border-white px-2.5 py-1 rounded-lg">
+                UT
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+              <span className="text-xs text-emerald-100 font-bold">معادل دلاری کل:</span>
+              <span className="text-sm font-black text-white font-mono" dir="ltr">
+                ${formatNumber(totalNetWorthUSD, lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
               </span>
             </div>
 
             {/* UT valuation metric */}
-            <p className="text-xs text-emerald-100 mt-2 flex items-center gap-1.5 flex-wrap">
-              <ShieldCheck className="w-4 h-4 text-sky-300 shrink-0" />
-              <span>نرخ پایه ارز UT با پشتوانه ۱۰۰٪ ذخایر:</span>
-              <span className="font-bold text-sky-200 font-mono" dir="ltr">
-                1 UT = ${formatNumber(marketPrices.UT, lang, { minimumFractionDigits: 2 })} USD
+            <div className="text-xs text-emerald-100 mt-2 flex items-center gap-2 flex-wrap">
+              <span className="flex items-center gap-1">
+                <ShieldCheck className="w-4 h-4 text-sky-300 shrink-0" />
+                <span>ارزش با پشتوانه ۱۰۰٪ ذخایر:</span>
               </span>
-            </p>
+              <span className="font-bold text-sky-200 font-mono" dir="ltr">
+                1 UT = ${formatTokenPrice(marketPrices.UT, lang)} USD
+              </span>
+              <span className="text-[11px] text-emerald-200/80 bg-black/20 px-2 py-0.5 rounded-md font-mono" dir="ltr">
+                (Base: ${formatTokenPrice(UT_BASE_FLOOR_PRICE, lang)})
+              </span>
+            </div>
           </div>
 
           {/* Quick Action Buttons */}
@@ -137,9 +149,12 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <AssetCard 
               key={nativeAsset.id} 
               asset={nativeAsset} 
-              onClick={onOpenSwap} 
+              onClick={() => onOpenTransfer(nativeAsset.id)} 
+              onTransfer={(id) => onOpenTransfer(id)}
+              onSwap={onOpenSwap}
               t={t} 
               lang={lang} 
+              utPrice={marketPrices.UT}
             />
           )}
 
@@ -188,8 +203,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               key={asset.id} 
               asset={asset} 
               onClick={() => onOpenTransfer(asset.id)} 
+              onTransfer={(id) => onOpenTransfer(id)}
+              onSwap={onOpenSwap}
               t={t} 
               lang={lang} 
+              utPrice={marketPrices.UT}
             />
           ))}
         </div>
@@ -214,8 +232,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               key={asset.id} 
               asset={asset} 
               onClick={() => onOpenTransfer(asset.id)} 
+              onTransfer={(id) => onOpenTransfer(id)}
+              onSwap={onOpenSwap}
               t={t} 
               lang={lang} 
+              utPrice={marketPrices.UT}
             />
           ))}
         </div>

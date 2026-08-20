@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { ArrowRightLeft, X, AlertCircle, AlertTriangle } from 'lucide-react';
 import { ASSET_META } from '../constants';
 import { Translation, LanguageCode } from '../translations';
-import { formatNumber } from '../utils';
+import { formatNumber, formatTokenPrice } from '../utils';
 import { CustomSelect } from './CustomSelect';
 
 interface SwapModalProps {
@@ -151,8 +151,8 @@ export const SwapModal: React.FC<SwapModalProps> = ({
                 </button>
             </div>
             <div className="flex justify-between items-center mt-2 text-xs">
-                <span className="text-slate-400">
-                    ${formatNumber(fromPrice, lang, { minimumFractionDigits: 2 })} / {fromAssetId}
+                <span className="text-slate-400 font-mono">
+                    ${formatTokenPrice(fromPrice, lang)} / {fromAssetId}
                 </span>
                 <span className={`${isInsufficient ? 'text-rose-600 font-bold' : 'text-slate-500'}`}>
                     {t.balance}: {formatNumber(fromAsset?.balance, lang, { maximumFractionDigits: 4 })}
@@ -173,13 +173,31 @@ export const SwapModal: React.FC<SwapModalProps> = ({
             </div>
             <div className="flex items-center justify-between" dir="ltr">
                 <span className="text-2xl font-black text-emerald-600">
-                    {formatNumber(estimatedOutput, lang, { maximumFractionDigits: 4 })}
+                    {formatNumber(estimatedOutput, lang, { 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: estimatedOutput < 1 ? 4 : 2 
+                    })}
                 </span>
-                <span className="text-xs font-mono text-slate-400">
-                    ${formatNumber(toPrice, lang, { minimumFractionDigits: 2 })} / {toAssetId}
+                <span className="text-xs font-mono font-bold text-slate-500">
+                    ${formatTokenPrice(toPrice, lang)} USD / {ASSET_META[toAssetId]?.pairSymbol || toAssetId}
                 </span>
             </div>
           </div>
+
+          {/* Direct Exchange Rate Summary */}
+          {!isSameCurrency && fromPrice > 0 && toPrice > 0 && (
+            <div className="bg-emerald-50/70 p-3 rounded-2xl border border-emerald-200/80 flex items-center justify-between text-xs" dir="ltr">
+              <span className="font-bold text-emerald-800">
+                {ASSET_META[fromAssetId]?.pairSymbol || fromAssetId}/{ASSET_META[toAssetId]?.pairSymbol || toAssetId} Rate:
+              </span>
+              <span className="font-mono font-black text-emerald-950">
+                1 {ASSET_META[fromAssetId]?.pairSymbol || fromAssetId} = {formatNumber(fromPrice / toPrice, lang, { 
+                  minimumFractionDigits: 2, 
+                  maximumFractionDigits: (fromPrice / toPrice) < 1 ? 6 : 4 
+                })} {ASSET_META[toAssetId]?.pairSymbol || toAssetId}
+              </span>
+            </div>
+          )}
 
           {error && <p className="text-rose-600 text-xs font-bold text-center bg-rose-50 p-2.5 rounded-xl border border-rose-100">{error}</p>}
         </div>

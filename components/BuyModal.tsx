@@ -3,8 +3,9 @@ import { Asset } from '../types';
 import { Button } from './Button';
 import { ShoppingCart, X, CreditCard, AlertCircle } from 'lucide-react';
 import { Translation, LanguageCode } from '../translations';
-import { formatNumber } from '../utils';
+import { formatNumber, formatTokenPrice } from '../utils';
 import { CustomSelect } from './CustomSelect';
+import { ASSET_META } from '../constants';
 
 interface BuyModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export const BuyModal: React.FC<BuyModalProps> = ({
   if (!isOpen) return null;
 
   const selectedAsset = assets.find(a => a.id === assetId);
+  const pairSymbol = ASSET_META[assetId]?.pairSymbol || assetId;
   const price = selectedAsset?.priceUsd || 1;
   const numAmount = parseFloat(amount || '0');
   const totalCost = numAmount * price;
@@ -95,10 +97,10 @@ export const BuyModal: React.FC<BuyModalProps> = ({
               onChange={setAssetId}
               dir={lang === 'fa' || lang === 'ar' ? 'rtl' : 'ltr'}
             />
-            <div className="flex justify-between items-center text-xs text-slate-500 mt-2.5 px-1">
-              <span>{t.rate}:</span>
-              <span className="font-mono font-bold text-slate-700" dir="ltr">
-                1 {selectedAsset?.id} = ${formatNumber(price, lang, { minimumFractionDigits: price < 1 ? 4 : 2 })} USD
+            <div className="flex justify-between items-center text-xs text-slate-600 mt-2.5 px-1 font-mono" dir="ltr">
+              <span className="font-bold">{pairSymbol}/USD:</span>
+              <span className="font-bold text-slate-800">
+                1 {pairSymbol} = ${formatTokenPrice(price, lang)} USD
               </span>
             </div>
           </div>
@@ -113,7 +115,7 @@ export const BuyModal: React.FC<BuyModalProps> = ({
                 placeholder="0.00"
                 className="bg-transparent text-2xl font-black text-slate-800 outline-none w-full"
               />
-              <span className="font-bold text-slate-500">{selectedAsset?.symbol || selectedAsset?.id}</span>
+              <span className="font-bold text-slate-600">{pairSymbol}</span>
             </div>
           </div>
 
@@ -125,7 +127,7 @@ export const BuyModal: React.FC<BuyModalProps> = ({
                 {t.totalCost} (USD)
               </span>
               <span className={`text-xl font-black ${isInsufficient ? 'text-rose-700' : 'text-emerald-900'}`} dir="ltr">
-                ${formatNumber(totalCost, lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${formatNumber(totalCost, lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
               </span>
             </div>
             {isInsufficient && <AlertCircle className="w-5 h-5 text-rose-500" />}

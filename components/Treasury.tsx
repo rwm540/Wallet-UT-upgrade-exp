@@ -1,11 +1,10 @@
 import React from 'react';
 import { ASSET_META, INITIAL_TREASURY_RESERVES } from '../constants';
-import { Building2, ShieldCheck, Scale, Info, Layers, CheckCircle2 } from 'lucide-react';
+import { Building2, ShieldCheck, Scale, Info, Sparkles, TrendingUp } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Translation, LanguageCode } from '../translations';
-import { formatNumber } from '../utils';
-import { calculateUTBackedPrice } from '../services/priceService';
-import { motion } from 'motion/react';
+import { formatNumber, formatTokenPrice } from '../utils';
+import { calculateUTBackedPrice, UT_TOTAL_SUPPLY, UT_BASE_FLOOR_PRICE } from '../services/priceService';
 
 interface TreasuryProps {
   t: Translation;
@@ -20,9 +19,9 @@ export const Treasury: React.FC<TreasuryProps> = ({
   lang, 
   prices, 
   reserves = INITIAL_TREASURY_RESERVES,
-  circulatingUT = 3000000,
+  circulatingUT = UT_TOTAL_SUPPLY,
 }) => {
-  const { utPrice, totalReserveValueUSD, reserveBreakdown } = calculateUTBackedPrice(
+  const { utPrice, totalReserveValueUSD, reserveBreakdown, baseFloorPrice, backingMultiplier } = calculateUTBackedPrice(
     reserves,
     prices,
     circulatingUT
@@ -30,11 +29,13 @@ export const Treasury: React.FC<TreasuryProps> = ({
 
   const chartData = reserveBreakdown.map(item => ({
     name: ASSET_META[item.id]?.fullName || item.id,
-    shortName: item.id,
+    shortName: ASSET_META[item.id]?.pairSymbol || item.id,
+    id: item.id,
     value: Math.round(item.valueUSD),
     amount: item.amount,
     unit: ASSET_META[item.id]?.unit || '',
     percentage: Number(item.percentage.toFixed(1)),
+    impactPerTokenUSD: item.impactPerTokenUSD,
     color: ASSET_META[item.id]?.color || '#3b82f6'
   }));
 
@@ -63,50 +64,67 @@ export const Treasury: React.FC<TreasuryProps> = ({
         </div>
 
         {/* UT Valuation Live Metric Card */}
-        <div className="bg-gradient-to-br from-emerald-50 to-sky-50/80 border border-emerald-200/80 rounded-2xl p-4 text-end min-w-[220px] shadow-sm">
+        <div className="bg-gradient-to-br from-emerald-50 to-sky-50/80 border border-emerald-200/80 rounded-2xl p-4 text-end min-w-[240px] shadow-sm">
           <div className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider flex items-center justify-end gap-1">
-            <Scale className="w-3.5 h-3.5" /> {t.nativeCategory}
+            <Scale className="w-3.5 h-3.5" /> نرخ لحظه‌ای ۱۰۰٪ با پشتوانه
           </div>
-          <div className="text-2xl font-black text-emerald-950 mt-0.5" dir="ltr">
-            1 UT = ${formatNumber(utPrice, lang, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} USD
+          <div className="text-2xl font-black text-emerald-950 mt-0.5 font-mono" dir="ltr">
+            1 UT = ${formatTokenPrice(utPrice, lang)} USD
           </div>
-          <div className="text-[11px] text-slate-500 font-medium mt-1">
-            {t.backingRatio}: <span className="font-bold text-emerald-600">{backingRatio.toFixed(1)}%</span>
+          <div className="flex items-center justify-end gap-2 text-[11px] text-slate-500 font-medium mt-1">
+            <span>قیمت پایه:</span>
+            <span className="font-mono font-bold text-slate-700" dir="ltr">${formatTokenPrice(baseFloorPrice || UT_BASE_FLOOR_PRICE, lang)}</span>
           </div>
         </div>
       </div>
 
-      {/* Vault Stats Summary Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div className="bg-emerald-50/40 p-4 rounded-2xl border border-emerald-100 shadow-xs">
+      {/* Vault Stats Summary Bar (3 Cards) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 shadow-xs">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.backingValue}</span>
-            <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">طلای فیزیکی و ذخایر امن</span>
+            <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">طلا و ارزهای ذخیره</span>
           </div>
-          <span className="text-2xl font-black text-slate-900" dir="ltr">
-            ${formatNumber(totalReserveValueUSD, lang, { maximumFractionDigits: 0 })}
+          <span className="text-2xl font-black text-slate-900 font-mono block" dir="ltr">
+            ${formatNumber(totalReserveValueUSD, lang, { maximumFractionDigits: 0 })} USD
           </span>
           <span className="text-[11px] text-slate-400 block mt-1">مجموع ارزش دلاری وثایق قفل شده در خزانه</span>
         </div>
 
-        <div className="bg-sky-50/40 p-4 rounded-2xl border border-sky-100 shadow-xs">
+        <div className="bg-sky-50/50 p-4 rounded-2xl border border-sky-100 shadow-xs">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.utReserve}</span>
-            <span className="text-[10px] font-bold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md">در گردش</span>
+            <span className="text-[10px] font-bold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md">عرضه کل و قابل معامله</span>
           </div>
-          <span className="text-2xl font-black text-sky-700" dir="ltr">
+          <span className="text-2xl font-black text-sky-700 font-mono block" dir="ltr">
             {formatNumber(circulatingUT, lang, { maximumFractionDigits: 0 })} UT
           </span>
-          <span className="text-[11px] text-slate-400 block mt-1">کل توکن‌های صادر شده با پوشش ۱۰۰٪</span>
+          <span className="text-[11px] text-slate-400 block mt-1">یک میلیارد توکن صادر شده تحت ضمانت خزانه</span>
+        </div>
+
+        <div className="bg-teal-50/50 p-4 rounded-2xl border border-teal-100 shadow-xs">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">ضریب تقویت ارزش توکن</span>
+            <span className="text-[10px] font-bold bg-teal-100 text-teal-800 px-2 py-0.5 rounded-md">Backing Multiplier</span>
+          </div>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <TrendingUp className="w-5 h-5 text-emerald-600 shrink-0" />
+            <span className="text-2xl font-black text-teal-950 font-mono" dir="ltr">
+              +{formatNumber(Math.round(backingMultiplier), lang)}x
+            </span>
+          </div>
+          <span className="text-[11px] text-slate-400 block mt-1">افزایش ارزش نسبت به قیمت پایه ($0.0000001)</span>
         </div>
       </div>
 
-      {/* Transparency Guarantee Banner (Emerald & Sky Gradient) */}
+      {/* Transparency Guarantee Banner */}
       <div className="bg-gradient-to-r from-emerald-800 via-teal-700 to-sky-700 text-white rounded-2xl p-4 sm:p-5 mb-6 flex items-start gap-3 shadow-md border-b-2 border-emerald-900">
         <Info className="w-5 h-5 text-sky-300 shrink-0 mt-0.5" />
         <div className="text-xs sm:text-sm leading-relaxed">
           <span className="font-bold text-sky-200 block mb-1">شفافیت ۱۰۰٪ و ارزش‌گذاری الگوریتمی وثیقه‌محور:</span>
-          <p className="text-emerald-50">{t.reserveFormulaDesc}</p>
+          <p className="text-emerald-50">
+            قیمت پایه <b>$0.0000001 USD</b> بر روی کل عرضه ۱ میلیارد توکن UT تعریف شده و ارزش واقعی لحظه‌ای آن مستقیماً با واریز و افزایش ارزش ذخایر طلا، نقره، پالادیوم، بیت‌کوین و اتریوم رشد می‌کند. نرخ فعلی هر توکن معادل <b>${formatTokenPrice(utPrice, lang)} USD</b> است.
+          </p>
         </div>
       </div>
 
@@ -130,15 +148,15 @@ export const Treasury: React.FC<TreasuryProps> = ({
                 ))}
               </Pie>
               <Tooltip 
-                formatter={(val: number) => [`$${val.toLocaleString()} USD`, 'Collateral Value']}
+                formatter={(val: number) => [`$${val.toLocaleString()} USD`, 'ارزش وثیقه']}
                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}
               />
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-xs font-bold text-slate-400">Vault Total</span>
+            <span className="text-xs font-bold text-slate-400">کل ذخایر خزانه</span>
             <span className="text-base font-black text-slate-800">
-              ${(totalReserveValueUSD / 1000000).toFixed(2)}M
+              ${(totalReserveValueUSD / 1000000).toFixed(2)}M USD
             </span>
           </div>
         </div>
@@ -146,7 +164,7 @@ export const Treasury: React.FC<TreasuryProps> = ({
         {/* Breakdown List */}
         <div className="lg:col-span-7 space-y-2.5">
           <h4 className="text-sm font-black text-slate-700 uppercase tracking-wider mb-3 flex items-center justify-between">
-            <span>{t.backedBy} (تفکیک سبد دارایی‌های ذخیره)</span>
+            <span>{t.backedBy} (تفکیک سبد دارایی‌ها و تاثیر بر هر توکن)</span>
             <span className="text-xs text-slate-400 font-normal">{chartData.length} دارایی پشتیبان</span>
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -164,18 +182,21 @@ export const Treasury: React.FC<TreasuryProps> = ({
                     <span className="font-extrabold text-xs text-slate-800 block">
                       {item.shortName}
                     </span>
-                    <span className="text-[11px] text-slate-400 font-mono" dir="ltr">
+                    <span className="text-[11px] text-slate-500 font-mono" dir="ltr">
                       {formatNumber(item.amount, lang)} {item.unit}
+                    </span>
+                    <span className="text-[10px] text-emerald-700 font-bold font-mono block mt-0.5" dir="ltr">
+                      +{formatTokenPrice(item.impactPerTokenUSD, lang)}/UT
                     </span>
                   </div>
                 </div>
 
                 <div className="text-end">
-                  <span className="font-extrabold text-xs text-slate-700 block" dir="ltr">
+                  <span className="font-extrabold text-xs text-slate-700 block font-mono" dir="ltr">
                     ${formatNumber(item.value, lang)}
                   </span>
-                  <span className="text-[10px] font-bold text-blue-600">
-                    {item.percentage}%
+                  <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-100 inline-block mt-0.5">
+                    {item.percentage}% از خزانه
                   </span>
                 </div>
               </div>

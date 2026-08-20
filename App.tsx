@@ -28,13 +28,14 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { translations, LANGUAGES, LanguageCode } from './translations';
-import { formatNumber } from './utils';
+import { formatNumber, formatTokenPrice } from './utils';
 import { 
   LiveMarketPrices, 
   BASELINE_PRICES, 
   BASELINE_CHANGES_24H, 
   fetchLiveMarketPrices, 
-  calculateUTBackedPrice 
+  calculateUTBackedPrice,
+  UT_TOTAL_SUPPLY 
 } from './services/priceService';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -78,7 +79,7 @@ export const App: React.FC = () => {
 
   // Treasury Reserves
   const [treasuryReserves] = useState<Record<string, number>>(INITIAL_TREASURY_RESERVES);
-  const [circulatingUT, setCirculatingUT] = useState<number>(3000000);
+  const [circulatingUT, setCirculatingUT] = useState<number>(UT_TOTAL_SUPPLY);
 
   const t = translations[lang];
 
@@ -355,40 +356,40 @@ export const App: React.FC = () => {
 
             {/* UT Backed Token */}
             <div className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-50 to-sky-50 px-2.5 py-0.5 rounded-lg shrink-0 border border-emerald-300/80 font-mono shadow-xs">
-              <span className="font-black text-emerald-700">UT:</span>
-              <span className="font-black text-slate-900">${formatNumber(marketPrices.UT, lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <span className="font-black text-emerald-700">UT/USD:</span>
+              <span className="font-black text-slate-900">${formatTokenPrice(marketPrices.UT, lang)}</span>
               <span className="text-[10px] text-emerald-600 font-black">+{priceChanges.UT}%</span>
             </div>
 
             {/* Metals */}
             <div className="flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-lg shrink-0 border border-amber-200 font-mono">
-              <span className="font-bold text-amber-700">GOLD:</span>
-              <span className="font-black text-slate-800">${formatNumber(marketPrices.GOLD, lang, { minimumFractionDigits: 2 })}/oz</span>
+              <span className="font-bold text-amber-700">Gold/USD:</span>
+              <span className="font-black text-slate-800">${formatNumber(marketPrices.GOLD, lang, { minimumFractionDigits: 2 })}</span>
             </div>
             <div className="flex items-center gap-1 bg-sky-50 px-2 py-0.5 rounded-lg shrink-0 border border-sky-200 font-mono">
-              <span className="font-bold text-sky-700">SILVER:</span>
-              <span className="font-black text-slate-800">${formatNumber(marketPrices.SILVER, lang, { minimumFractionDigits: 2 })}/oz</span>
+              <span className="font-bold text-sky-700">Silver/USD:</span>
+              <span className="font-black text-slate-800">${formatNumber(marketPrices.SILVER, lang, { minimumFractionDigits: 2 })}</span>
             </div>
             <div className="flex items-center gap-1 bg-teal-50 px-2 py-0.5 rounded-lg shrink-0 border border-teal-200 font-mono">
-              <span className="font-bold text-teal-700">PALLADIUM:</span>
-              <span className="font-black text-slate-800">${formatNumber(marketPrices.PALLADIUM, lang, { minimumFractionDigits: 2 })}/oz</span>
+              <span className="font-bold text-teal-700">Palladium/USD:</span>
+              <span className="font-black text-slate-800">${formatNumber(marketPrices.PALLADIUM, lang, { minimumFractionDigits: 2 })}</span>
             </div>
 
             {/* Cryptos */}
             <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg shrink-0 border border-slate-200 font-mono">
-              <span className="font-bold text-orange-600">BTC:</span>
+              <span className="font-bold text-orange-600">BTC/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.BTC, lang, { maximumFractionDigits: 0 })}</span>
             </div>
             <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg shrink-0 border border-slate-200 font-mono">
-              <span className="font-bold text-sky-600">ETH:</span>
+              <span className="font-bold text-sky-600">ETH/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.ETH, lang, { maximumFractionDigits: 0 })}</span>
             </div>
             <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg shrink-0 border border-slate-200 font-mono">
-              <span className="font-bold text-rose-600">TRX:</span>
+              <span className="font-bold text-rose-600">TRX/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.TRX, lang, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</span>
             </div>
             <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg shrink-0 border border-slate-200 font-mono">
-              <span className="font-bold text-emerald-600">POL:</span>
+              <span className="font-bold text-emerald-600">POL/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.MATIC, lang, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</span>
             </div>
           </div>
