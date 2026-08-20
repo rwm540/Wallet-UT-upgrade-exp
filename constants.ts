@@ -84,7 +84,7 @@ export const ASSET_META: Record<string, {
     category: 'metals', 
     unit: 'oz', 
     fullName: 'Palladium (XPD)',
-    pairSymbol: 'Palladium'
+    pairSymbol: 'XPD'
   },
 };
 

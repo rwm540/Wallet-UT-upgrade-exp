@@ -86,60 +86,64 @@ export const AssetCard: React.FC<AssetCardProps> = ({
 
       <div>
         {/* Header Info */}
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex items-center gap-3">
-            <div 
-              className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md font-bold text-lg transition-transform group-hover:scale-105 shrink-0"
-              style={{ backgroundColor: asset.color }}
-            >
-              {asset.symbol}
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h3 className="font-extrabold text-slate-800 text-base">{asset.name}</h3>
-                {isUT && (
-                  <span className="p-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-black px-1.5 border border-emerald-200">
-                    100% BACKED
-                  </span>
-                )}
+        <div className="flex flex-col gap-3 mb-3">
+          <div className="flex justify-between items-start">
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md font-bold text-lg transition-transform group-hover:scale-105 shrink-0"
+                style={{ backgroundColor: asset.color }}
+              >
+                {asset.symbol}
               </div>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs font-mono font-bold text-slate-400" dir="ltr">
-                  {asset.id}
-                </span>
-                {asset.change24h !== undefined && (
-                  <span className={`flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                    isPositive ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'
-                  }`}>
-                    {isPositive ? <TrendingUp className="w-2.5 h-2.5 me-0.5 inline" /> : <TrendingDown className="w-2.5 h-2.5 me-0.5 inline" />}
-                    {isPositive ? `+${asset.change24h.toFixed(2)}%` : `${asset.change24h.toFixed(2)}%`}
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-extrabold text-slate-800 text-base">{asset.name}</h3>
+                  {isUT && (
+                    <span className="p-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-black px-1.5 border border-emerald-200">
+                      100% BACKED
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-xs font-mono font-bold text-slate-400" dir="ltr">
+                    {asset.id}
                   </span>
-                )}
+                  {asset.change24h !== undefined && (
+                    <span className={`flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                      isPositive ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'
+                    }`}>
+                      {isPositive ? <TrendingUp className="w-2.5 h-2.5 me-0.5 inline" /> : <TrendingDown className="w-2.5 h-2.5 me-0.5 inline" />}
+                      {isPositive ? `+${asset.change24h.toFixed(2)}%` : `${asset.change24h.toFixed(2)}%`}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="text-end">
+          <div className="w-full bg-slate-50 rounded-2xl p-3 border border-slate-100">
             {isUT ? (
-              <>
-                <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md inline-block mb-1">
-                  موجودی کیف پول
-                </span>
-                <p className="font-black text-xl text-emerald-950" dir="ltr">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md inline-block mb-0.5">
+                    موجودی کیف پول
+                  </span>
+                  <p className="text-xs font-bold text-slate-500" dir="ltr">
+                    ≈ ${formatNumber(asset.balance * asset.priceUsd, lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                  </p>
+                </div>
+                <p className="font-black text-xl text-emerald-950 font-mono" dir="ltr">
                   {formatNumber(asset.balance, lang, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                   <span className="text-xs font-bold text-emerald-700 ms-1">UT</span>
                 </p>
-                <p className="text-xs font-bold text-slate-500 mt-0.5" dir="ltr">
-                  ≈ ${formatNumber(asset.balance * asset.priceUsd, lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
-                </p>
-              </>
+              </div>
             ) : (
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-end gap-1.5" dir="ltr">
-                  <span className="text-[11px] font-extrabold text-sky-800 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between" dir="ltr">
+                  <span className="text-[11px] font-extrabold text-sky-800 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
                     {pairSymbol}/UT
                   </span>
-                  <span className="font-black text-sm sm:text-base text-slate-900 font-mono">
+                  <span className="font-black text-base text-slate-900 font-mono">
                     {formatNumber(rateInUT, lang, { 
                       minimumFractionDigits: 2, 
                       maximumFractionDigits: rateInUT < 1 ? 4 : 2 
@@ -147,11 +151,11 @@ export const AssetCard: React.FC<AssetCardProps> = ({
                     <span className="text-xs font-bold text-sky-700 ms-1">UT</span>
                   </span>
                 </div>
-                <div className="flex items-center justify-end gap-1.5" dir="ltr">
-                  <span className="text-[11px] font-extrabold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                <div className="flex items-center justify-between border-t border-slate-200/60 pt-1.5" dir="ltr">
+                  <span className="text-[11px] font-extrabold text-slate-600 bg-slate-200/60 px-2 py-0.5 rounded border border-slate-300">
                     {pairSymbol}/USD
                   </span>
-                  <span className="font-bold text-xs text-slate-700 font-mono">
+                  <span className="font-bold text-xs sm:text-sm text-slate-700 font-mono">
                     ${formatNumber(asset.priceUsd, lang, { 
                       minimumFractionDigits: asset.priceUsd < 1 ? 4 : 2, 
                       maximumFractionDigits: asset.priceUsd < 1 ? 4 : 2 
@@ -165,11 +169,11 @@ export const AssetCard: React.FC<AssetCardProps> = ({
         </div>
 
         {/* Valuation Pair Row */}
-        <div className="flex items-center justify-between py-2 px-3 bg-emerald-50/50 rounded-xl mb-3 border border-emerald-100">
-          <span className="text-[11px] text-slate-600 font-bold">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 px-3 bg-emerald-50/50 rounded-xl mb-3 border border-emerald-100 gap-1">
+          <span className="text-[11px] text-slate-600 font-bold shrink-0">
             {isUT ? 'جفت‌ارز پایه و پشتوانه:' : 'ارزش تبادل لحظه‌ای:'}
           </span>
-          <span className="text-xs font-mono font-black text-slate-800" dir="ltr">
+          <span className="text-xs font-mono font-black text-slate-800 break-all text-end w-full sm:w-auto" dir="ltr">
             {isUT ? (
               <span className="text-emerald-950 font-bold">
                 1 UT = ${formatTokenPrice(asset.priceUsd, lang)} USD

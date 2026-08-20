@@ -6,6 +6,7 @@ import { BuyModal } from './components/BuyModal';
 import { DashboardPage } from './components/pages/DashboardPage';
 import { TreasuryPage } from './components/pages/TreasuryPage';
 import { HistoryPage } from './components/pages/HistoryPage';
+import { ChatWalletPage } from './components/pages/ChatWalletPage';
 import { Button } from './components/Button';
 import { UserState, Transaction } from './types';
 import { generateInitialAssets, INITIAL_TREASURY_RESERVES } from './constants';
@@ -25,7 +26,8 @@ import {
   ArrowRightLeft,
   Copy,
   Check,
-  ChevronDown
+  ChevronDown,
+  MessageSquare
 } from 'lucide-react';
 import { translations, LANGUAGES, LanguageCode } from './translations';
 import { formatNumber, formatTokenPrice } from './utils';
@@ -45,7 +47,7 @@ const generateUniqueKey = () => {
   return `KEY-${timestamp}-${random}`.toUpperCase();
 };
 
-type AppView = 'dashboard' | 'treasury' | 'history';
+type AppView = 'dashboard' | 'treasury' | 'history' | 'chatwallet';
 
 export const App: React.FC = () => {
   const [lang, setLang] = useState<LanguageCode>('fa');
@@ -340,6 +342,15 @@ export const App: React.FC = () => {
       activeBorder: 'border-b-4 border-teal-800',
       colorText: 'text-teal-600',
     },
+    {
+      id: 'chatwallet' as AppView,
+      label: 'ChatWallet',
+      icon: MessageSquare,
+      activeGradient: 'from-emerald-600 via-teal-600 to-sky-600',
+      activeShadow: 'shadow-[0_4px_12px_rgba(16,185,129,0.35)]',
+      activeBorder: 'border-b-4 border-emerald-800',
+      colorText: 'text-emerald-600',
+    },
   ];
 
   return (
@@ -545,6 +556,16 @@ export const App: React.FC = () => {
             />
           )}
 
+          {/* VIEW 4: CHATWALLET PAGE (چت‌والت زنده و چت‌بات) */}
+          {view === 'chatwallet' && (
+            <ChatWalletPage
+              key="page-chatwallet"
+              user={user}
+              t={t}
+              lang={lang}
+            />
+          )}
+
         </AnimatePresence>
       </main>
 
@@ -554,7 +575,7 @@ export const App: React.FC = () => {
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="max-w-md mx-auto bg-white/95 backdrop-blur-xl rounded-3xl p-2 border-2 border-emerald-100 shadow-[0_12px_36px_rgba(16,185,129,0.18)] pointer-events-auto grid grid-cols-4 gap-2"
+          className="max-w-md mx-auto bg-white/95 backdrop-blur-xl rounded-3xl p-2 border-2 border-emerald-100 shadow-[0_12px_36px_rgba(16,185,129,0.18)] pointer-events-auto grid grid-cols-5 gap-1.5"
         >
           {/* Nav Item 1: Dashboard (ICON ONLY) */}
           <motion.button
@@ -568,9 +589,9 @@ export const App: React.FC = () => {
                 : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50/80'
             }`}
           >
-            <LayoutDashboard className="w-6 h-6" />
+            <LayoutDashboard className="w-5 h-5" />
             {view === 'dashboard' && (
-              <motion.div layoutId="androidIndicator" className="absolute -bottom-1 w-2.5 h-1 bg-white rounded-full" />
+              <motion.div layoutId="androidIndicator" className="absolute -bottom-1 w-2 h-1 bg-white rounded-full" />
             )}
           </motion.button>
 
@@ -586,9 +607,9 @@ export const App: React.FC = () => {
                 : 'text-slate-500 hover:text-sky-600 hover:bg-sky-50/80'
             }`}
           >
-            <Building2 className="w-6 h-6" />
+            <Building2 className="w-5 h-5" />
             {view === 'treasury' && (
-              <motion.div layoutId="androidIndicator" className="absolute -bottom-1 w-2.5 h-1 bg-white rounded-full" />
+              <motion.div layoutId="androidIndicator" className="absolute -bottom-1 w-2 h-1 bg-white rounded-full" />
             )}
           </motion.button>
 
@@ -604,13 +625,31 @@ export const App: React.FC = () => {
                 : 'text-slate-500 hover:text-teal-600 hover:bg-teal-50/80'
             }`}
           >
-            <History className="w-6 h-6" />
+            <History className="w-5 h-5" />
             {view === 'history' && (
-              <motion.div layoutId="androidIndicator" className="absolute -bottom-1 w-2.5 h-1 bg-white rounded-full" />
+              <motion.div layoutId="androidIndicator" className="absolute -bottom-1 w-2 h-1 bg-white rounded-full" />
             )}
           </motion.button>
 
-          {/* Nav Item 4: 3-DOTS ("...") MORE MENU BUTTON (STRICTLY ICON ONLY - ZERO TEXT) */}
+          {/* Nav Item 4: ChatWallet (ICON ONLY) */}
+          <motion.button
+            whileTap={{ scale: 0.88 }}
+            onClick={() => setView('chatwallet')}
+            title="ChatWallet"
+            aria-label="ChatWallet"
+            className={`relative flex items-center justify-center py-3.5 px-2 rounded-2xl transition-all ${
+              view === 'chatwallet'
+                ? 'bg-gradient-to-b from-emerald-600 via-teal-600 to-sky-600 text-white shadow-lg shadow-emerald-600/35 border-b-2 border-emerald-800'
+                : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50/80'
+            }`}
+          >
+            <MessageSquare className="w-5 h-5" />
+            {view === 'chatwallet' && (
+              <motion.div layoutId="androidIndicator" className="absolute -bottom-1 w-2 h-1 bg-white rounded-full" />
+            )}
+          </motion.button>
+
+          {/* Nav Item 5: 3-DOTS ("...") MORE MENU BUTTON (STRICTLY ICON ONLY - ZERO TEXT) */}
           <motion.button
             whileTap={{ scale: 0.88 }}
             onClick={() => setIsOverflowMenuOpen(true)}
@@ -623,7 +662,7 @@ export const App: React.FC = () => {
             }`}
           >
             <div className="relative flex items-center justify-center">
-              <MoreHorizontal className="w-6 h-6" />
+              <MoreHorizontal className="w-5 h-5" />
               <span className="absolute -top-1 -end-1 w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
               <span className="absolute -top-1 -end-1 w-2 h-2 bg-emerald-600 rounded-full"></span>
             </div>
@@ -648,30 +687,33 @@ export const App: React.FC = () => {
 
             {/* BottomSheet Card on Mobile / Centered Modal on Desktop */}
             <motion.div 
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "100%", opacity: 0 }}
+              initial={{ y: "100%", opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: "100%", opacity: 0, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              className="relative w-full max-w-lg bg-white rounded-t-[32px] md:rounded-3xl shadow-2xl border-t-4 md:border-4 border-emerald-100 overflow-hidden z-10 flex flex-col max-h-[85vh]"
+              className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border-2 border-emerald-100 overflow-hidden z-10 flex flex-col max-h-[85vh] m-3 sm:m-4"
             >
               {/* Top Drag Handle for Android Sheet */}
               <div className="md:hidden pt-3 pb-1 flex justify-center">
                 <div className="w-12 h-1.5 bg-emerald-200 rounded-full" />
               </div>
               
-              {/* Header (Emerald & Sky Gradient) */}
-              <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 p-5 text-white flex items-center justify-between border-b-2 border-emerald-700">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-md border border-white/30">
+              {/* Header (3D Metallic Emerald & Sky Gradient) */}
+              <div className="bg-gradient-to-b from-emerald-500 via-emerald-600 to-teal-800 p-5 text-white flex items-center justify-between border-b-4 border-emerald-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),0_8px_16px_rgba(6,95,70,0.3)] relative overflow-hidden rounded-t-[28px]">
+                {/* 3D Glossy Light Reflection */}
+                <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent pointer-events-none"></div>
+
+                <div className="flex items-center gap-3 relative z-10">
+                  <div className="w-11 h-11 bg-gradient-to-br from-emerald-400 to-teal-700 backdrop-blur-md rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-[0_4px_10px_rgba(0,0,0,0.3),inset_0_2px_3px_rgba(255,255,255,0.6)] border-2 border-emerald-300">
                     UT
                   </div>
                   <div>
-                    <h3 className="font-black text-base">{t.appName}</h3>
-                    <div className="flex items-center gap-2 text-xs text-emerald-100">
-                      <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
-                      <span className="font-mono uppercase">{walletType || 'WALLET'}</span>
+                    <h3 className="font-black text-base drop-shadow-md">{t.appName}</h3>
+                    <div className="flex items-center gap-2 text-xs text-emerald-100 drop-shadow-xs">
+                      <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse shadow-[0_0_8px_#6ee7b7]"></span>
+                      <span className="font-mono uppercase font-bold">{walletType || 'WALLET'}</span>
                       <span className="text-emerald-200">•</span>
-                      <span className="text-white font-bold">متصل</span>
+                      <span className="text-white font-extrabold bg-emerald-900/40 px-2 py-0.5 rounded-full border border-emerald-400/30 text-[10px]">متصل</span>
                     </div>
                   </div>
                 </div>
@@ -679,9 +721,9 @@ export const App: React.FC = () => {
                 <motion.button 
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsOverflowMenuOpen(false)}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+                  className="p-2.5 rounded-2xl bg-black/20 hover:bg-black/30 text-white transition-all shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)] border border-white/20 relative z-10 cursor-pointer"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-5 h-5 drop-shadow-md" />
                 </motion.button>
               </div>
 
@@ -766,6 +808,18 @@ export const App: React.FC = () => {
                       <span>{t.transfer}</span>
                     </motion.button>
                   </div>
+
+                  <motion.button
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => {
+                      setIsOverflowMenuOpen(false);
+                      setView('chatwallet');
+                    }}
+                    className="w-full mt-2.5 p-3.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 text-white rounded-2xl shadow-md flex items-center justify-center gap-2 font-black text-xs"
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                    <span>ورود به ChatWallet (چت زنده و چت‌بات)</span>
+                  </motion.button>
                 </div>
 
                 {/* Language Selection Grid */}

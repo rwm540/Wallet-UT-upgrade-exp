@@ -59,10 +59,10 @@ export const BuyModal: React.FC<BuyModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}></div>
       
-      <div className="relative bg-white w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl border-t-4 border-emerald-500 animate-in fade-in zoom-in duration-200">
+      <div className="relative bg-white w-full max-w-sm sm:max-w-md rounded-3xl p-4 sm:p-6 shadow-2xl border-t-4 border-emerald-500 animate-in fade-in zoom-in duration-200 my-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
             <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600">
