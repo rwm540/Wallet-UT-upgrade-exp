@@ -266,6 +266,36 @@ export const App: React.FC = () => {
     });
   };
 
+  const handleUpdateUTBalance = (delta: number, description: string): boolean => {
+    const utAsset = user.assets.find(a => a.id === 'UT');
+    if (!utAsset || utAsset.balance + delta < 0) {
+      return false;
+    }
+    setUser(prev => {
+      const newAssets = prev.assets.map(asset => {
+        if (asset.id === 'UT') {
+          return { ...asset, balance: asset.balance + delta };
+        }
+        return asset;
+      });
+      const newTx: Transaction = {
+        id: `TX-API-${Date.now()}`,
+        type: 'TRANSFER',
+        amount: Math.abs(delta),
+        currency: 'UT',
+        toAddress: description,
+        date: Date.now(),
+        status: 'Completed'
+      };
+      return {
+        ...prev,
+        assets: newAssets,
+        transactions: [...prev.transactions, newTx]
+      };
+    });
+    return true;
+  };
+
   // Calculate Total Net Worth (USD)
   const totalNetWorthUSD = user.assets.reduce((acc, curr) => {
     const price = marketPrices[curr.id as keyof LiveMarketPrices] || curr.priceUsd || 0;
@@ -563,6 +593,7 @@ export const App: React.FC = () => {
               user={user}
               t={t}
               lang={lang}
+              onUpdateBalance={handleUpdateUTBalance}
             />
           )}
 

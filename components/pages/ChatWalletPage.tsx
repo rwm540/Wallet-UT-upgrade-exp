@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Translation, LanguageCode } from '../../translations';
 import { UserState } from '../../types';
-import { MessageSquare, Send, Users, ShieldCheck, UserPlus, PhoneCall, Trash2, Search, ArrowRight, Check, Globe, MessageCircle, Sparkles, Lock } from 'lucide-react';
+import { MessageSquare, Send, Users, ShieldCheck, UserPlus, PhoneCall, Trash2, Search, ArrowRight, Check, Globe, MessageCircle, Sparkles, Lock, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ChatMessage {
@@ -27,15 +27,26 @@ interface ServerUser {
   lastSeen?: string;
 }
 
+interface ApiLine {
+  id: string;
+  name: string;
+  chatNumber: string;
+  apiKey: string;
+  createdAt: number;
+  messagesSentCount: number;
+}
+
 interface ChatWalletPageProps {
   user: UserState;
   t: Translation;
   lang: LanguageCode;
+  onUpdateBalance?: (delta: number, description: string) => boolean;
 }
 
 const STORAGE_MESSAGES_KEY = 'ut_wallet_chatwallet_messages_v5';
 const STORAGE_CONTACTS_KEY = 'ut_wallet_chatwallet_contacts_v4';
 const STORAGE_MY_CHATNUMBER_KEY = 'ut_wallet_chatwallet_my_number_v1';
+const STORAGE_API_LINES_KEY = 'ut_wallet_chatwallet_apilines_v1';
 
 const SERVER_USERS_REGISTRY: ServerUser[] = [
   { chatNumber: '+77799123', name: 'سارا احمدی', isOnline: true },
@@ -45,7 +56,7 @@ const SERVER_USERS_REGISTRY: ServerUser[] = [
   { chatNumber: '+77755443', name: 'الناز مرادی', isOnline: true },
 ];
 
-export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang }) => {
+export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, onUpdateBalance }) => {
   const [myChatNumber, setMyChatNumber] = useState<string>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_MY_CHATNUMBER_KEY);
@@ -91,13 +102,35 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang })
     ];
   });
 
-  const [activeTab, setActiveTab] = useState<'messages' | 'contacts' | 'search'>('messages');
+  const [activeTab, setActiveTab] = useState<'messages' | 'contacts' | 'apiline'>('messages');
   const [activeChatPeer, setActiveChatPeer] = useState<string | null>(null);
   const [inputText, setInputText] = useState('');
 
-  const [serverSearchQuery, setServerSearchQuery] = useState('');
-  const [searchedUserResult, setSearchedUserResult] = useState<ServerUser | null>(null);
-  const [searchNotFound, setSearchNotFound] = useState(false);
+  const [apiLines, setApiLines] = useState<ApiLine[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_API_LINES_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [
+      {
+        id: 'line-1',
+        name: 'ربات پشتیبانی فروش',
+        chatNumber: '+77788412',
+        apiKey: 'ut_live_a98f7c21e3094b',
+        createdAt: Date.now() - 86400000,
+        messagesSentCount: 14
+      }
+    ];
+  });
+
+  const [newLineName, setNewLineName] = useState('');
+  const [lineCreationError, setLineCreationError] = useState('');
+  const [lineCreationSuccess, setLineCreationSuccess] = useState('');
+
+  const [apiTestLine, setApiTestLine] = useState<ApiLine | null>(null);
+  const [apiRecipient, setApiRecipient] = useState('');
+  const [apiMessageText, setApiMessageText] = useState('');
+  const [apiTestStatus, setApiTestStatus] = useState<string | null>(null);
 
   const [isAddContactModalOpen, setIsAddContactModalOpen] = useState(false);
   const [modalChatNumber, setModalChatNumber] = useState('');
@@ -164,36 +197,86 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang })
     setInputText('');
   };
 
-  const handleServerSearch = (e: React.FormEvent) => {
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_API_LINES_KEY, JSON.stringify(apiLines));
+    } catch {}
+  }, [apiLines]);
+
+  const handleCreateApiLine = (e: React.FormEvent) => {
     e.preventDefault();
-    const query = serverSearchQuery.trim();
-    if (!query) return;
+    if (!newLineName.trim()) return;
 
-    let formatted = query;
-    if (!formatted.startsWith('+777')) {
-      if (formatted.startsWith('777')) formatted = '+' + formatted;
-      else formatted = '+777' + formatted.replace(/\D/g, '').slice(-5);
+    setLineCreationError('');
+    setLineCreationSuccess('');
+
+    if (onUpdateBalance) {
+      const success = onUpdateBalance(-100, `هزینه ایجاد خط API چت‌والت (${newLineName.trim()})`);
+      if (!success) {
+        setLineCreationError('موجودی UT کافی نیست! ایجاد خط نیاز به ۱۰۰ UT دارد.');
+        return;
+      }
     }
 
-    if (formatted === myChatNumber) {
-      setSearchedUserResult({ chatNumber: myChatNumber, name: `${myName} (خودتان)`, isOnline: true });
-      setSearchNotFound(false);
-      return;
+    const randomFive = Math.floor(10000 + Math.random() * 90000);
+    const newChatNum = `+777${randomFive}`;
+    const randomHex = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+    const newApiKey = `ut_live_${randomHex}`;
+
+    const newLine: ApiLine = {
+      id: `line-${Date.now()}`,
+      name: newLineName.trim(),
+      chatNumber: newChatNum,
+      apiKey: newApiKey,
+      createdAt: Date.now(),
+      messagesSentCount: 0
+    };
+
+    setApiLines(prev => [newLine, ...prev]);
+    setNewLineName('');
+    setLineCreationSuccess(`خط «${newLine.name}» با موفقیت ایجاد شد! (۱۰۰ UT کسر گردید).`);
+    setTimeout(() => setLineCreationSuccess(''), 5000);
+  };
+
+  const handleSendApiMessage = (line: ApiLine, recipient: string, text: string) => {
+    if (!recipient.trim() || !text.trim()) return;
+
+    if (onUpdateBalance) {
+      const success = onUpdateBalance(-0.01, `ارسال پیام خودکار API (${line.name})`);
+      if (!success) {
+        setApiTestStatus('خطا: موجودی UT کافی نیست (نیاز به 0.01 UT برای هر ارسال).');
+        return;
+      }
     }
 
-    const foundInServer = SERVER_USERS_REGISTRY.find(u => u.chatNumber === formatted);
-    const foundInContacts = contacts.find(c => c.chatNumber === formatted);
-
-    if (foundInServer) {
-      setSearchedUserResult(foundInServer);
-      setSearchNotFound(false);
-    } else if (foundInContacts) {
-      setSearchedUserResult({ chatNumber: foundInContacts.chatNumber, name: foundInContacts.name, isOnline: true });
-      setSearchNotFound(false);
-    } else {
-      setSearchedUserResult(null);
-      setSearchNotFound(true);
+    let formattedRecipient = recipient.trim();
+    if (!formattedRecipient.startsWith('+777')) {
+      if (formattedRecipient.startsWith('777')) formattedRecipient = '+' + formattedRecipient;
+      else formattedRecipient = '+777' + formattedRecipient.replace(/\D/g, '').slice(-5);
     }
+
+    const newMsg: ChatMessage = {
+      id: `msg-api-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      senderChatNumber: line.chatNumber,
+      senderName: `${line.name} (API)`,
+      recipientChatNumber: formattedRecipient,
+      text: text.trim(),
+      timestamp: Date.now(),
+    };
+
+    const updatedMessages = [...messages, newMsg];
+    setMessages(updatedMessages);
+    try {
+      localStorage.setItem(STORAGE_MESSAGES_KEY, JSON.stringify(updatedMessages));
+      window.dispatchEvent(new CustomEvent('chatwallet_sync', { detail: updatedMessages }));
+    } catch {}
+
+    setApiLines(prev => prev.map(l => l.id === line.id ? { ...l, messagesSentCount: l.messagesSentCount + 1 } : l));
+
+    setApiTestStatus('پیام با موفقیت از طریق API ارسال شد (۰.۰۱ UT کسر گردید).');
+    setApiMessageText('');
+    setApiRecipient('');
+    setTimeout(() => setApiTestStatus(null), 4000);
   };
 
   const handleAddContactSubmit = (e: React.FormEvent) => {
@@ -331,15 +414,15 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang })
         </button>
 
         <button
-          onClick={() => { setActiveTab('search'); setActiveChatPeer(null); }}
+          onClick={() => { setActiveTab('apiline'); setActiveChatPeer(null); }}
           className={`py-2 px-1 sm:px-3 rounded-xl font-bold text-[11px] sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-            activeTab === 'search'
+            activeTab === 'apiline'
               ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
               : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <Search className="w-4 h-4 shrink-0" />
-          <span className="truncate">جستجوی سرور</span>
+          <Sparkles className="w-4 h-4 shrink-0" />
+          <span className="truncate">خطوط API</span>
         </button>
       </div>
 
@@ -570,97 +653,155 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang })
               </div>
             )}
 
-            {/* TAB 3: SERVER SEARCH */}
-            {activeTab === 'search' && (
-              <div className="max-w-md mx-auto py-4 space-y-4 flex-1 w-full">
-                <div className="text-center space-y-1.5">
-                  <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl mx-auto flex items-center justify-center shadow-inner">
-                    <Globe className="w-6 h-6" />
+            {/* TAB 3: API LINES & CREATION */}
+            {activeTab === 'apiline' && (
+              <div className="space-y-4 py-2 flex-1 w-full">
+                <div className="bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-sky-500/15 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="space-y-1 text-start w-full">
+                    <h2 className="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-emerald-600" />
+                      <span>سیستم ایجاد خط و ارسال خودکار API</span>
+                    </h2>
+                    <p className="text-[11px] text-slate-600">
+                      هر خط جدید شامل شماره اختصاصی +777 و یک کلید API امن است. هزینه ایجاد خط <span className="font-bold text-emerald-700">۱۰۰ UT</span> و ارسال هر پیام خودکار <span className="font-bold text-emerald-700">0.01 UT</span> می‌باشد که به طور خودکار از کیف پول UT شما کسر می‌گردد.
+                    </p>
                   </div>
-                  <h2 className="text-xs sm:text-sm font-black text-slate-800">جستجوی شماره در سرور ChatWallet</h2>
-                  <p className="text-[11px] text-slate-500">
-                    شماره اختصاصی +777 کاربر را برای استعلام وارد کنید.
-                  </p>
                 </div>
 
-                <form onSubmit={handleServerSearch} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={serverSearchQuery}
-                    onChange={(e) => setServerSearchQuery(e.target.value)}
-                    placeholder="+777XXXXX"
-                    className="flex-1 bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
-                    dir="ltr"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                  >
-                    <Search className="w-4 h-4" />
-                    <span>استعلام</span>
-                  </button>
+                {/* Create Line Form */}
+                <form onSubmit={handleCreateApiLine} className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+                  <h3 className="text-xs font-bold text-slate-800">ایجاد خط جدید</h3>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      value={newLineName}
+                      onChange={(e) => setNewLineName(e.target.value)}
+                      placeholder="نام دلخواه خط (مثلاً ربات فروشگاه، پشتیبانی...)"
+                      className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!newLineName.trim()}
+                      className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      <span>ایجاد خط (۱۰۰ UT)</span>
+                    </button>
+                  </div>
+
+                  {lineCreationError && (
+                    <div className="bg-rose-50 border border-rose-200 rounded-xl p-2.5 text-rose-700 text-xs font-bold">
+                      {lineCreationError}
+                    </div>
+                  )}
+
+                  {lineCreationSuccess && (
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-emerald-800 text-xs font-bold">
+                      {lineCreationSuccess}
+                    </div>
+                  )}
                 </form>
 
-                <AnimatePresence>
-                  {searchedUserResult && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 shadow-sm space-y-3"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
-                            {searchedUserResult.name.slice(0, 2)}
+                {/* API Test Status Feedback */}
+                {apiTestStatus && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-blue-800 text-xs font-bold text-center">
+                    {apiTestStatus}
+                  </div>
+                )}
+
+                {/* List of Created Lines */}
+                <div className="space-y-3">
+                  <h3 className="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-1.5">
+                    <Key className="w-4 h-4 text-emerald-600" />
+                    <span>خطوط فعال شما ({apiLines.length})</span>
+                  </h3>
+
+                  <div className="space-y-3">
+                    {apiLines.map(line => (
+                      <div key={line.id} className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs space-y-3">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-black text-slate-800 text-xs sm:text-sm">{line.name}</h4>
+                              <span className="bg-emerald-50 text-emerald-800 font-mono text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-200" dir="ltr">
+                                {line.chatNumber}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-slate-400 block mt-0.5">
+                              پیام‌های ارسالی از API: <strong className="text-slate-700">{line.messagesSentCount}</strong> پیام
+                            </span>
                           </div>
-                          <div className="min-w-0">
-                            <h3 className="font-bold text-slate-800 text-xs sm:text-sm truncate">{searchedUserResult.name}</h3>
-                            <span className="font-mono font-bold text-emerald-700 text-[11px] block truncate" dir="ltr">{searchedUserResult.chatNumber}</span>
+
+                          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(line.apiKey);
+                                alert('کلید API کپی شد!');
+                              }}
+                              className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-[11px] font-bold px-3 py-1.5 rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+                              title="کپی API Key"
+                            >
+                              <span>کپی API Key</span>
+                            </button>
+                            <button
+                              onClick={() => setApiTestLine(apiTestLine?.id === line.id ? null : line)}
+                              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl shadow-sm transition-all cursor-pointer flex items-center gap-1"
+                            >
+                              <Send className="w-3.5 h-3.5 rtl:rotate-180" />
+                              <span>{apiTestLine?.id === line.id ? 'بستن آزمایش' : 'تست ارسال API'}</span>
+                            </button>
                           </div>
                         </div>
-                        <span className="bg-emerald-200/70 text-emerald-900 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-                          {searchedUserResult.isOnline ? 'آنلاین' : (searchedUserResult.lastSeen || 'آفلاین')}
-                        </span>
-                      </div>
 
-                      <div className="flex gap-2 pt-1">
-                        <button
-                          onClick={() => setActiveChatPeer(searchedUserResult.chatNumber)}
-                          className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          <span>ارسال پیام</span>
-                        </button>
-
-                        {!contacts.some(c => c.chatNumber === searchedUserResult.chatNumber) && (
-                          <button
-                            onClick={() => {
-                              setModalChatNumber(searchedUserResult.chatNumber);
-                              setModalName(searchedUserResult.name);
-                              setIsAddContactModalOpen(true);
-                            }}
-                            className="bg-white hover:bg-slate-100 text-slate-800 border border-emerald-300 font-bold py-2 px-3 rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1"
+                        {/* API Test Sender Form */}
+                        {apiTestLine?.id === line.id && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-3 pt-3"
                           >
-                            <UserPlus className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>افزودن</span>
-                          </button>
+                            <div className="text-[11px] text-slate-600 font-bold">
+                              آزمایش ارسال خودکار پیام از طریق API (هزینه هر ارسال: <span className="text-emerald-700">0.01 UT</span>):
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <input
+                                type="text"
+                                value={apiRecipient}
+                                onChange={(e) => setApiRecipient(e.target.value)}
+                                placeholder="شماره گیرنده (مثلاً +77799123)"
+                                className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                dir="ltr"
+                              />
+                              <input
+                                type="text"
+                                value={apiMessageText}
+                                onChange={(e) => setApiMessageText(e.target.value)}
+                                placeholder="متن پیام خودکار..."
+                                className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+                              />
+                            </div>
+                            <div className="flex justify-end">
+                              <button
+                                onClick={() => handleSendApiMessage(line, apiRecipient, apiMessageText)}
+                                disabled={!apiRecipient.trim() || !apiMessageText.trim()}
+                                className="bg-teal-600 hover:bg-teal-500 disabled:opacity-40 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-sm transition-all cursor-pointer flex items-center gap-1"
+                              >
+                                <span>ارسال از طریق API (کسر 0.01 UT)</span>
+                              </button>
+                            </div>
+                          </motion.div>
                         )}
                       </div>
-                    </motion.div>
-                  )}
+                    ))}
 
-                  {searchNotFound && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-center text-rose-700 text-xs font-bold"
-                    >
-                      کاربری با این شماره در سرور یافت نشد.
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    {apiLines.length === 0 && (
+                      <div className="text-center py-10 text-slate-400 space-y-2">
+                        <Sparkles className="w-8 h-8 mx-auto text-slate-300" />
+                        <p className="text-xs font-bold">هنوز هیچ خط API ایجاد نکرده‌اید.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 
