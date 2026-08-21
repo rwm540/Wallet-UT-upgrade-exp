@@ -14,7 +14,8 @@ import {
   Gem, 
   Coins, 
   Sparkles,
-  ArrowUpRight
+  ArrowUpRight,
+  CreditCard
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -27,6 +28,7 @@ interface DashboardPageProps {
   onOpenBuy: () => void;
   onOpenSwap: () => void;
   onOpenTransfer: (assetId?: string) => void;
+  onOpenApiPayment: () => void;
 }
 
 export const DashboardPage: React.FC<DashboardPageProps> = ({
@@ -38,6 +40,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onOpenBuy,
   onOpenSwap,
   onOpenTransfer,
+  onOpenApiPayment,
 }) => {
   const nativeAsset = user.assets.find(a => a.id === 'UT');
   const metalsAssets = user.assets.filter(a => a.category === 'metals');
@@ -118,6 +121,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               onClick={() => onOpenTransfer()}
             >
               <Send className="w-4 h-4" /> {t.transfer}
+            </Button>
+
+            <Button 
+              variant="primary" 
+              className="bg-indigo-600 hover:bg-indigo-500 border-indigo-800 shadow-lg shadow-indigo-900/30 py-3 px-5 text-white" 
+              onClick={onOpenApiPayment}
+            >
+              <CreditCard className="w-4 h-4" /> API Payment
             </Button>
           </div>
         </div>

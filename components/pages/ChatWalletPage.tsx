@@ -132,6 +132,10 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
   const [apiMessageText, setApiMessageText] = useState('');
   const [apiTestStatus, setApiTestStatus] = useState<string | null>(null);
 
+  const [directRecipient, setDirectRecipient] = useState('');
+  const [directError, setDirectError] = useState('');
+  const [directSuccess, setDirectSuccess] = useState('');
+
   const [isAddContactModalOpen, setIsAddContactModalOpen] = useState(false);
   const [modalChatNumber, setModalChatNumber] = useState('');
   const [modalName, setModalName] = useState('');
@@ -236,6 +240,44 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
     setNewLineName('');
     setLineCreationSuccess(`خط «${newLine.name}» با موفقیت ایجاد شد! (۱۰۰ UT کسر گردید).`);
     setTimeout(() => setLineCreationSuccess(''), 5000);
+  };
+
+  const handleSendDirectMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!directRecipient.trim()) return;
+
+    setDirectError('');
+    setDirectSuccess('');
+
+    let formatted = directRecipient.trim();
+    if (!formatted.startsWith('+777')) {
+      if (formatted.startsWith('777')) formatted = '+' + formatted;
+      else formatted = '+777' + formatted.replace(/\D/g, '').slice(-5);
+    }
+
+    const foundInServer = SERVER_USERS_REGISTRY.find(u => u.chatNumber === formatted);
+    const foundInContacts = contacts.find(c => c.chatNumber === formatted);
+    const foundInApiLines = apiLines.find(l => l.chatNumber === formatted);
+    const isSelf = formatted === myChatNumber;
+
+    if (!foundInServer && !foundInContacts && !foundInApiLines && !isSelf) {
+      setDirectError('شماره وارد شده معتبر نیست یا در سرور وجود ندارد.');
+      return;
+    }
+
+    setDirectSuccess('شماره تأیید شد! در حال انتقال به صفحه چت...');
+    setDirectRecipient('');
+    setTimeout(() => {
+      setDirectSuccess('');
+      setActiveChatPeer(formatted);
+    }, 600);
+  };
+
+  const handleDeleteApiLine = (lineId: string) => {
+    setApiLines(prev => prev.filter(l => l.id !== lineId));
+    if (apiTestLine?.id === lineId) {
+      setApiTestLine(null);
+    }
   };
 
   const handleSendApiMessage = (line: ApiLine, recipient: string, text: string) => {
@@ -540,8 +582,49 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
             
             {/* TAB 1: MESSAGES */}
             {activeTab === 'messages' && (
-              <div className="space-y-3 flex-1">
-                <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+              <div className="space-y-4 flex-1">
+                {/* Start Chat By Number Form */}
+                <form onSubmit={handleSendDirectMessage} className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+                  <h3 className="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4 text-emerald-600" />
+                    <span>شروع گفتگو با شماره (بدون نیاز به ذخیره مخاطب)</span>
+                  </h3>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={directRecipient}
+                      onChange={(e) => setDirectRecipient(e.target.value)}
+                      placeholder="شماره مقصد (مثلاً +77799123)"
+                      className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      dir="ltr"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!directRecipient.trim()}
+                      className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
+                    >
+                      <Send className="w-4 h-4 rtl:rotate-180" />
+                      <span>شروع گفتگو</span>
+                    </button>
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium">
+                    * شماره قبل از ورود به صفحه چت از نظر وجود در سرور بررسی می‌شود.
+                  </div>
+
+                  {directError && (
+                    <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-700 text-xs font-bold">
+                      {directError}
+                    </div>
+                  )}
+
+                  {directSuccess && (
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-800 text-xs font-bold">
+                      {directSuccess}
+                    </div>
+                  )}
+                </form>
+
+                <div className="flex justify-between items-center pb-2 border-b border-slate-100 pt-2">
                   <h2 className="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-1.5">
                     <MessageCircle className="w-4 h-4 text-emerald-600" />
                     <span>لیست گفتگوهای فعال</span>
@@ -742,6 +825,13 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                               title="کپی API Key"
                             >
                               <span>کپی API Key</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteApiLine(line.id)}
+                              className="bg-rose-50 hover:bg-rose-100 text-rose-600 p-2 rounded-xl transition-all cursor-pointer border border-rose-200"
+                              title="حذف خط"
+                            >
+                              <Trash2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => setApiTestLine(apiTestLine?.id === line.id ? null : line)}

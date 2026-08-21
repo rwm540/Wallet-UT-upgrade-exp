@@ -3,6 +3,7 @@ import { Login } from './components/Login';
 import { SwapModal } from './components/SwapModal';
 import { TransferModal } from './components/TransferModal';
 import { BuyModal } from './components/BuyModal';
+import { ApiPaymentModal } from './components/ApiPaymentModal';
 import { DashboardPage } from './components/pages/DashboardPage';
 import { TreasuryPage } from './components/pages/TreasuryPage';
 import { HistoryPage } from './components/pages/HistoryPage';
@@ -72,6 +73,7 @@ export const App: React.FC = () => {
   const [isTransferOpen, setIsTransferOpen] = useState(false);
   const [transferDefaultAsset, setTransferDefaultAsset] = useState<string | undefined>(undefined);
   const [isBuyOpen, setIsBuyOpen] = useState(false);
+  const [isApiPaymentOpen, setIsApiPaymentOpen] = useState(false);
   const [walletType, setWalletType] = useState<string | null>(null);
 
   // Real-time market prices state (USD)
@@ -387,9 +389,9 @@ export const App: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50/50 via-sky-50/40 to-slate-100/80 text-slate-900 pb-28 md:pb-16">
       
       {/* 1. TOP LIVE REAL PRICE TICKER BAR (Luminous Sky & Emerald Market Ribbon - Zero Dark Elements) */}
-      <div className="bg-white/95 backdrop-blur-md text-slate-800 text-xs border-b border-emerald-200/80 px-3 py-1.5 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" dir="ltr">
+      <div className="bg-white/95 backdrop-blur-md text-slate-800 text-xs border-b border-emerald-200/80 px-2 sm:px-3 py-2 sm:py-1.5 sticky top-0 z-50 shadow-sm h-auto min-h-[42px] sm:min-h-[33px] flex items-center">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 w-full">
+          <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-0.5" dir="ltr">
             <span className="flex items-center gap-1.5 text-[10px] font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full shrink-0 border border-emerald-300 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               LIVE USD
@@ -449,7 +451,7 @@ export const App: React.FC = () => {
       </div>
 
       {/* 2. TOP MAIN APP BAR (Modern Emerald-Sky Accent Header) */}
-      <header className="bg-white/95 backdrop-blur-md sticky top-[33px] z-40 border-b border-emerald-100 shadow-sm transition-all">
+      <header className="bg-white/95 backdrop-blur-md sticky top-[42px] sm:top-[33px] z-40 border-b border-emerald-100 shadow-sm transition-all">
         <div className="max-w-7xl mx-auto px-3 sm:px-6">
           <div className="flex items-center justify-between h-16 sm:h-18">
             
@@ -561,6 +563,7 @@ export const App: React.FC = () => {
                 setTransferDefaultAsset(assetId);
                 setIsTransferOpen(true);
               }}
+              onOpenApiPayment={() => setIsApiPaymentOpen(true)}
             />
           )}
 
@@ -941,6 +944,14 @@ export const App: React.FC = () => {
         lang={lang} 
         walletType={walletType} 
         externalBalance={user.externalBalance}
+      />
+
+      <ApiPaymentModal
+        isOpen={isApiPaymentOpen}
+        onClose={() => setIsApiPaymentOpen(false)}
+        user={user}
+        onUpdateUser={setUser}
+        lang={lang}
       />
 
     </div>
