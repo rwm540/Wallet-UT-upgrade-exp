@@ -580,6 +580,7 @@ export const App: React.FC = () => {
               prices={marketPrices}
               reserves={treasuryReserves}
               circulatingUT={circulatingUT}
+              userTransactions={user.transactions}
             />
           )}
 

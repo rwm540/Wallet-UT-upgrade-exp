@@ -2,6 +2,7 @@ import React from 'react';
 import { Treasury } from '../Treasury';
 import { Translation, LanguageCode } from '../../translations';
 import { LiveMarketPrices } from '../../services/priceService';
+import { Transaction } from '../../types';
 import { motion } from 'motion/react';
 
 interface TreasuryPageProps {
@@ -10,6 +11,7 @@ interface TreasuryPageProps {
   prices: LiveMarketPrices;
   reserves: Record<string, number>;
   circulatingUT: number;
+  userTransactions?: Transaction[];
 }
 
 export const TreasuryPage: React.FC<TreasuryPageProps> = ({
@@ -18,6 +20,7 @@ export const TreasuryPage: React.FC<TreasuryPageProps> = ({
   prices,
   reserves,
   circulatingUT,
+  userTransactions = [],
 }) => {
   return (
     <motion.div 
@@ -33,6 +36,7 @@ export const TreasuryPage: React.FC<TreasuryPageProps> = ({
         prices={prices as unknown as Record<string, number>}
         reserves={reserves}
         circulatingUT={circulatingUT}
+        userTransactions={userTransactions}
       />
     </motion.div>
   );
