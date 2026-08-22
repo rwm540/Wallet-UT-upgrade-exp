@@ -255,13 +255,9 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
       else formatted = '+777' + formatted.replace(/\D/g, '').slice(-5);
     }
 
-    const foundInServer = SERVER_USERS_REGISTRY.find(u => u.chatNumber === formatted);
-    const foundInContacts = contacts.find(c => c.chatNumber === formatted);
-    const foundInApiLines = apiLines.find(l => l.chatNumber === formatted);
-    const isSelf = formatted === myChatNumber;
-
-    if (!foundInServer && !foundInContacts && !foundInApiLines && !isSelf) {
-      setDirectError('شماره وارد شده معتبر نیست یا در سرور وجود ندارد.');
+    const isValidFormat = /^\+777\d{4,8}$/.test(formatted);
+    if (!isValidFormat) {
+      setDirectError('فرمت شماره باید به صورت +777XXXXX باشد (مثال: +77799123).');
       return;
     }
 
@@ -270,7 +266,23 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
     setTimeout(() => {
       setDirectSuccess('');
       setActiveChatPeer(formatted);
-    }, 600);
+    }, 400);
+  };
+
+  const handleDeleteChat = (peerNumber: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const updatedMessages = messages.filter(
+      m => !(
+        (m.senderChatNumber === peerNumber && m.recipientChatNumber === myChatNumber) ||
+        (m.senderChatNumber === myChatNumber && m.recipientChatNumber === peerNumber) ||
+        m.senderChatNumber === peerNumber ||
+        m.recipientChatNumber === peerNumber
+      )
+    );
+    saveAndBroadcastMessages(updatedMessages);
+    if (activeChatPeer === peerNumber) {
+      setActiveChatPeer(null);
+    }
   };
 
   const handleDeleteApiLine = (lineId: string) => {
@@ -358,7 +370,8 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
     if (peer && peer !== myChatNumber) {
       const existingContact = contacts.find(c => c.chatNumber === peer);
       const serverReg = SERVER_USERS_REGISTRY.find(u => u.chatNumber === peer);
-      const peerName = existingContact?.name || serverReg?.name || `کاربر (${peer.slice(-4)})`;
+      // If user has no contact name or server name, fallback ONLY to line number
+      const peerName = existingContact?.name || serverReg?.name || peer;
 
       const existing = activeChatsMap.get(peer);
       if (!existing || m.timestamp > existing.timestamp) {
@@ -372,17 +385,6 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
     }
   });
 
-  contacts.forEach(c => {
-    if (!activeChatsMap.has(c.chatNumber)) {
-      activeChatsMap.set(c.chatNumber, {
-        chatNumber: c.chatNumber,
-        name: c.name,
-        lastMessage: 'شروع گفتگو...',
-        timestamp: 0,
-      });
-    }
-  });
-
   const chatList = Array.from(activeChatsMap.values()).sort((a, b) => b.timestamp - a.timestamp);
 
   const currentChatMessages = activeChatPeer
@@ -391,7 +393,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
 
   const activePeerContact = contacts.find(c => c.chatNumber === activeChatPeer);
   const activePeerServer = SERVER_USERS_REGISTRY.find(u => u.chatNumber === activeChatPeer);
-  const activePeerName = activePeerContact?.name || activePeerServer?.name || (activeChatPeer ? `کاربر (${activeChatPeer.slice(-4)})` : '');
+  const activePeerName = activePeerContact?.name || activePeerServer?.name || activeChatPeer || '';
 
   return (
     <motion.div 
@@ -484,20 +486,31 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
-                  {activePeerName.slice(0, 2)}
+                  {activePeerName.startsWith('+') ? <PhoneCall className="w-4 h-4" /> : activePeerName.slice(0, 2)}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-black text-slate-800 text-xs sm:text-sm truncate">{activePeerName}</h3>
-                  <span className="text-[10px] sm:text-[11px] font-mono text-emerald-700 font-bold block" dir="ltr">{activeChatPeer}</span>
+                  <h3 className={`font-black text-slate-800 text-xs sm:text-sm truncate ${activePeerName.startsWith('+') ? 'font-mono' : ''}`} dir={activePeerName.startsWith('+') ? 'ltr' : 'rtl'}>
+                    {activePeerName}
+                  </h3>
+                  {activePeerName !== activeChatPeer && (
+                    <span className="text-[10px] sm:text-[11px] font-mono text-emerald-700 font-bold block" dir="ltr">{activeChatPeer}</span>
+                  )}
                 </div>
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  onClick={() => handleDeleteChat(activeChatPeer)}
+                  className="w-9 h-9 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-all cursor-pointer border border-rose-200 shrink-0"
+                  title="حذف این گفتگو"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
                 {!contacts.some(c => c.chatNumber === activeChatPeer) && (
                   <button
                     onClick={() => {
                       setModalChatNumber(activeChatPeer);
-                      setModalName(activePeerName);
+                      setModalName(activePeerName !== activeChatPeer ? activePeerName : '');
                       setIsAddContactModalOpen(true);
                     }}
                     className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold px-3 py-1.5 rounded-2xl flex items-center gap-1 transition-all cursor-pointer border border-emerald-200"
@@ -515,6 +528,11 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
               {currentChatMessages.map(msg => {
                 const isMe = msg.senderChatNumber === myChatNumber;
                 const timeStr = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const senderContact = contacts.find(c => c.chatNumber === msg.senderChatNumber);
+                const senderServer = SERVER_USERS_REGISTRY.find(u => u.chatNumber === msg.senderChatNumber);
+                const displaySender = isMe 
+                  ? 'شما' 
+                  : (senderContact?.name || senderServer?.name || msg.senderChatNumber);
 
                 return (
                   <motion.div
@@ -524,7 +542,9 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                     className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
                   >
                     <div className="flex items-center gap-1.5 mb-1 px-1">
-                      <span className="text-[10px] font-bold text-slate-600">{msg.senderName}</span>
+                      <span className={`text-[10px] font-bold text-slate-600 ${displaySender.startsWith('+') ? 'font-mono' : ''}`} dir={displaySender.startsWith('+') ? 'ltr' : 'rtl'}>
+                        {displaySender}
+                      </span>
                       <span className="text-[9px] font-mono text-slate-400" dir="ltr">{timeStr}</span>
                     </div>
 
@@ -633,36 +653,55 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                 </div>
 
                 <div className="space-y-2.5">
-                  {chatList.map(chat => (
-                    <div
-                      key={chat.chatNumber}
-                      onClick={() => setActiveChatPeer(chat.chatNumber)}
-                      className="p-3.5 rounded-2xl border border-slate-200/80 hover:border-emerald-300 hover:bg-emerald-50/40 bg-white transition-all cursor-pointer flex items-center justify-between gap-2 group shadow-2xs"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
-                          {chat.name.slice(0, 2)}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h4 className="font-bold text-slate-800 text-xs sm:text-sm truncate">{chat.name}</h4>
-                            <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg font-bold border border-emerald-100" dir="ltr">{chat.chatNumber}</span>
+                  {chatList.map(chat => {
+                    const hasCustomName = chat.name !== chat.chatNumber && Boolean(chat.name) && !chat.name.startsWith('+777');
+                    return (
+                      <div
+                        key={chat.chatNumber}
+                        onClick={() => setActiveChatPeer(chat.chatNumber)}
+                        className="p-3 sm:p-3.5 rounded-2xl border border-slate-200/80 hover:border-emerald-300 hover:bg-emerald-50/40 bg-white transition-all cursor-pointer flex items-center justify-between gap-2.5 group shadow-2xs"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
+                            {hasCustomName ? chat.name.slice(0, 2) : <PhoneCall className="w-4 h-4" />}
                           </div>
-                          <p className="text-[11px] text-slate-500 mt-0.5 truncate">{chat.lastMessage}</p>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {hasCustomName ? (
+                                <>
+                                  <h4 className="font-bold text-slate-800 text-xs sm:text-sm truncate">{chat.name}</h4>
+                                  <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg font-bold border border-emerald-100" dir="ltr">{chat.chatNumber}</span>
+                                </>
+                              ) : (
+                                <h4 className="font-mono font-black text-slate-800 text-xs sm:text-sm tracking-wider" dir="ltr">{chat.chatNumber}</h4>
+                              )}
+                            </div>
+                            <p className="text-[11px] text-slate-500 mt-0.5 truncate">{chat.lastMessage}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={(e) => handleDeleteChat(chat.chatNumber, e)}
+                            className="p-2 sm:p-2.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all cursor-pointer border border-slate-200/60 hover:border-rose-200 shrink-0"
+                            title="حذف این گفتگو"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </button>
+                          <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 group-hover:bg-emerald-600 group-hover:text-white px-3 py-2 rounded-xl transition-all shadow-2xs shrink-0 border border-emerald-100 group-hover:border-transparent">
+                            باز کردن
+                          </span>
                         </div>
                       </div>
-
-                      <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 group-hover:bg-emerald-600 group-hover:text-white px-3 py-1.5 rounded-xl transition-all shadow-2xs shrink-0 border border-emerald-100 group-hover:border-transparent">
-                        باز کردن
-                      </span>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {chatList.length === 0 && (
                     <div className="text-center py-14 text-slate-400 space-y-2">
                       <MessageSquare className="w-9 h-9 mx-auto text-slate-300" />
                       <p className="text-xs font-bold">هنوز هیچ گفتگویی ندارید.</p>
-                      <p className="text-[11px]">از طریق «جستجوی سرور» یا «مخاطبین» گفتگو را شروع کنید.</p>
+                      <p className="text-[11px]">از طریق کادر بالا یا «دفترچه مخاطبین» گفتگو را شروع کنید.</p>
                     </div>
                   )}
                 </div>
