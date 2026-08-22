@@ -28,7 +28,8 @@ import {
   Copy,
   Check,
   ChevronDown,
-  MessageSquare
+  MessageSquare,
+  Menu
 } from 'lucide-react';
 import { translations, LANGUAGES, LanguageCode } from './translations';
 import { formatNumber, formatTokenPrice } from './utils';
@@ -65,7 +66,7 @@ export const App: React.FC = () => {
   const [view, setView] = useState<AppView>('dashboard');
   
   // 3-Dots Animated Menu state (Android BottomSheet & Web Popup)
-  const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
 
   // Modals
@@ -168,7 +169,7 @@ export const App: React.FC = () => {
     });
     setWalletType(null);
     setView('dashboard');
-    setIsOverflowMenuOpen(false);
+    setIsMobileMenuOpen(false);
   };
 
   const copyUserKey = () => {
@@ -388,50 +389,55 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50/50 via-sky-50/40 to-slate-100/80 text-slate-900 pb-28 md:pb-16">
       
-      {/* 1. TOP LIVE REAL PRICE TICKER BAR (Luminous Sky & Emerald Market Ribbon - Zero Dark Elements) */}
-      <div className="bg-white/95 backdrop-blur-md text-slate-800 text-xs border-b border-emerald-200/80 px-2 sm:px-3 py-2 sm:py-1.5 sticky top-0 z-50 shadow-sm h-auto min-h-[42px] sm:min-h-[33px] flex items-center">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 w-full">
-          <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-0.5" dir="ltr">
-            <span className="flex items-center gap-1.5 text-[10px] font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full shrink-0 border border-emerald-300 shadow-sm">
+      {/* 1. TOP LIVE REAL PRICE TICKER BAR (Luminous Sky & Emerald Market Ribbon - Scrollable with Full Visibility) */}
+      <div className="bg-white/95 backdrop-blur-md text-slate-800 text-xs border-b border-emerald-200/80 px-2 sm:px-3 py-1.5 sticky top-0 z-50 shadow-xs h-auto min-h-[40px] flex items-center">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-3 w-full min-w-0">
+          
+          {/* Scrollable Prices Ribbon */}
+          <div 
+            className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto scroll-smooth py-1 px-1 touch-pan-x [scrollbar-width:thin] scrollbar-thin scrollbar-thumb-emerald-200 scrollbar-track-transparent" 
+            dir="ltr"
+          >
+            <span className="flex items-center gap-1.5 text-[10px] font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full shrink-0 border border-emerald-300 shadow-2xs">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               LIVE USD
             </span>
 
             {/* UT Backed Token */}
-            <div className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-50 to-sky-50 px-2.5 py-0.5 rounded-lg shrink-0 border border-emerald-300/80 font-mono shadow-xs">
+            <div className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-50 to-sky-50 px-3 py-1 rounded-xl shrink-0 border border-emerald-300 font-mono shadow-2xs">
               <span className="font-black text-emerald-700">UT/USD:</span>
               <span className="font-black text-slate-900">${formatTokenPrice(marketPrices.UT, lang)}</span>
               <span className="text-[10px] text-emerald-600 font-black">+{priceChanges.UT}%</span>
             </div>
 
             {/* Metals */}
-            <div className="flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-lg shrink-0 border border-amber-200 font-mono">
+            <div className="flex items-center gap-1.5 bg-amber-50 px-2.5 py-1 rounded-xl shrink-0 border border-amber-200 font-mono shadow-2xs">
               <span className="font-bold text-amber-700">Gold/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.GOLD, lang, { minimumFractionDigits: 2 })}</span>
             </div>
-            <div className="flex items-center gap-1 bg-sky-50 px-2 py-0.5 rounded-lg shrink-0 border border-sky-200 font-mono">
+            <div className="flex items-center gap-1.5 bg-sky-50 px-2.5 py-1 rounded-xl shrink-0 border border-sky-200 font-mono shadow-2xs">
               <span className="font-bold text-sky-700">Silver/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.SILVER, lang, { minimumFractionDigits: 2 })}</span>
             </div>
-            <div className="flex items-center gap-1 bg-teal-50 px-2 py-0.5 rounded-lg shrink-0 border border-teal-200 font-mono">
+            <div className="flex items-center gap-1.5 bg-teal-50 px-2.5 py-1 rounded-xl shrink-0 border border-teal-200 font-mono shadow-2xs">
               <span className="font-bold text-teal-700">Palladium/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.PALLADIUM, lang, { minimumFractionDigits: 2 })}</span>
             </div>
 
             {/* Cryptos */}
-            <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg shrink-0 border border-slate-200 font-mono">
+            <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-xl shrink-0 border border-slate-200 font-mono shadow-2xs">
               <span className="font-bold text-orange-600">BTC/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.BTC, lang, { maximumFractionDigits: 0 })}</span>
             </div>
-            <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg shrink-0 border border-slate-200 font-mono">
+            <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-xl shrink-0 border border-slate-200 font-mono shadow-2xs">
               <span className="font-bold text-sky-600">ETH/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.ETH, lang, { maximumFractionDigits: 0 })}</span>
             </div>
-            <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg shrink-0 border border-slate-200 font-mono">
+            <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-xl shrink-0 border border-slate-200 font-mono shadow-2xs">
               <span className="font-bold text-rose-600">TRX/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.TRX, lang, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</span>
             </div>
-            <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-lg shrink-0 border border-slate-200 font-mono">
+            <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-xl shrink-0 border border-slate-200 font-mono shadow-2xs">
               <span className="font-bold text-emerald-600">POL/USD:</span>
               <span className="font-black text-slate-800">${formatNumber(marketPrices.MATIC, lang, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</span>
             </div>
@@ -442,7 +448,7 @@ export const App: React.FC = () => {
             onClick={refreshPrices}
             disabled={isRefreshingPrices}
             title={t.refreshPrices}
-            className="flex items-center gap-1.5 text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-lg transition-colors shrink-0 text-[11px] font-bold"
+            className="flex items-center gap-1.5 text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1.5 rounded-xl transition-colors shrink-0 text-[11px] font-bold shadow-2xs cursor-pointer active:scale-95"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshingPrices ? 'animate-spin text-emerald-600' : ''}`} />
             <span className="hidden sm:inline">{t.refreshPrices}</span>
@@ -509,11 +515,14 @@ export const App: React.FC = () => {
             {/* Right: Actions */}
             <div className="flex items-center gap-2">
               
+              {/* Language Selector Dropdown (Available on Mobile & Desktop) */}
+              <LanguageSelectorDropdown />
+
               {/* Desktop Key Badge */}
               <button 
                 onClick={copyUserKey}
                 title="Click to copy your unique hash key"
-                className="hidden lg:flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100/80 px-3 py-2 rounded-xl border border-emerald-200 transition-all text-xs font-mono font-bold text-emerald-900 shadow-xs active:translate-y-0.5"
+                className="hidden lg:flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100/80 px-3 py-2 rounded-xl border border-emerald-200 transition-all text-xs font-mono font-bold text-emerald-900 shadow-xs active:translate-y-0.5 cursor-pointer"
                 dir="ltr"
               >
                 <Key className="w-3.5 h-3.5 text-emerald-600" />
@@ -525,16 +534,11 @@ export const App: React.FC = () => {
                 )}
               </button>
 
-              {/* Desktop Language Selector */}
-              <div className="hidden sm:block">
-                <LanguageSelectorDropdown />
-              </div>
-
               {/* Desktop Direct Logout Button */}
               <button 
                 onClick={handleLogout} 
                 title={t.logout}
-                className="hidden md:flex p-2.5 bg-rose-50 text-rose-600 rounded-2xl hover:bg-rose-100 hover:text-rose-700 transition-all border-b-2 border-rose-200 shadow-sm active:translate-y-0.5"
+                className="hidden md:flex p-2.5 bg-rose-50 text-rose-600 rounded-2xl hover:bg-rose-100 hover:text-rose-700 transition-all border-b-2 border-rose-200 shadow-sm active:translate-y-0.5 cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -603,23 +607,23 @@ export const App: React.FC = () => {
         </AnimatePresence>
       </main>
 
-      {/* 4. DEDICATED ANDROID 3D BOTTOM NAVIGATION DOCK (STRICTLY ICON-ONLY WITH NO TEXT LABELS - PURE LIGHT EMERALD & SKY THEME) */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 p-3.5 pointer-events-none">
+      {/* 4. DEDICATED ANDROID 3D BOTTOM NAVIGATION DOCK (ICON DOCK WITH LIGHT THEME) */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 p-3 pointer-events-none">
         <motion.div 
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="max-w-md mx-auto bg-white/95 backdrop-blur-xl rounded-3xl p-2 border-2 border-emerald-100 shadow-[0_12px_36px_rgba(16,185,129,0.18)] pointer-events-auto grid grid-cols-5 gap-1.5"
+          className="max-w-md mx-auto bg-white/95 backdrop-blur-xl rounded-3xl p-1.5 border-2 border-emerald-100 shadow-[0_12px_36px_rgba(16,185,129,0.22)] pointer-events-auto grid grid-cols-5 gap-1"
         >
-          {/* Nav Item 1: Dashboard (ICON ONLY) */}
+          {/* Nav Item 1: Dashboard */}
           <motion.button
             whileTap={{ scale: 0.88 }}
             onClick={() => setView('dashboard')}
             title={t.dashboardNav}
             aria-label={t.dashboardNav}
-            className={`relative flex items-center justify-center py-3.5 px-2 rounded-2xl transition-all ${
+            className={`relative flex items-center justify-center py-3 px-2 rounded-2xl transition-all ${
               view === 'dashboard'
-                ? 'bg-gradient-to-b from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/35 border-b-2 border-emerald-800'
+                ? 'bg-gradient-to-b from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/35 border-b-2 border-emerald-800'
                 : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50/80'
             }`}
           >
@@ -629,15 +633,15 @@ export const App: React.FC = () => {
             )}
           </motion.button>
 
-          {/* Nav Item 2: Treasury (ICON ONLY) */}
+          {/* Nav Item 2: Treasury */}
           <motion.button
             whileTap={{ scale: 0.88 }}
             onClick={() => setView('treasury')}
             title={t.treasuryNav}
             aria-label={t.treasuryNav}
-            className={`relative flex items-center justify-center py-3.5 px-2 rounded-2xl transition-all ${
+            className={`relative flex items-center justify-center py-3 px-2 rounded-2xl transition-all ${
               view === 'treasury'
-                ? 'bg-gradient-to-b from-sky-500 to-teal-600 text-white shadow-lg shadow-sky-500/35 border-b-2 border-sky-700'
+                ? 'bg-gradient-to-b from-sky-500 to-teal-600 text-white shadow-md shadow-sky-500/35 border-b-2 border-sky-700'
                 : 'text-slate-500 hover:text-sky-600 hover:bg-sky-50/80'
             }`}
           >
@@ -647,15 +651,15 @@ export const App: React.FC = () => {
             )}
           </motion.button>
 
-          {/* Nav Item 3: History (ICON ONLY) */}
+          {/* Nav Item 3: History */}
           <motion.button
             whileTap={{ scale: 0.88 }}
             onClick={() => setView('history')}
             title={t.historyNav}
             aria-label={t.historyNav}
-            className={`relative flex items-center justify-center py-3.5 px-2 rounded-2xl transition-all ${
+            className={`relative flex items-center justify-center py-3 px-2 rounded-2xl transition-all ${
               view === 'history'
-                ? 'bg-gradient-to-b from-teal-600 to-emerald-600 text-white shadow-lg shadow-teal-600/35 border-b-2 border-teal-800'
+                ? 'bg-gradient-to-b from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-600/35 border-b-2 border-teal-800'
                 : 'text-slate-500 hover:text-teal-600 hover:bg-teal-50/80'
             }`}
           >
@@ -665,15 +669,15 @@ export const App: React.FC = () => {
             )}
           </motion.button>
 
-          {/* Nav Item 4: ChatWallet (ICON ONLY) */}
+          {/* Nav Item 4: ChatWallet */}
           <motion.button
             whileTap={{ scale: 0.88 }}
             onClick={() => setView('chatwallet')}
             title="ChatWallet"
             aria-label="ChatWallet"
-            className={`relative flex items-center justify-center py-3.5 px-2 rounded-2xl transition-all ${
+            className={`relative flex items-center justify-center py-3 px-2 rounded-2xl transition-all ${
               view === 'chatwallet'
-                ? 'bg-gradient-to-b from-emerald-600 via-teal-600 to-sky-600 text-white shadow-lg shadow-emerald-600/35 border-b-2 border-emerald-800'
+                ? 'bg-gradient-to-b from-emerald-600 via-teal-600 to-sky-600 text-white shadow-md shadow-emerald-600/35 border-b-2 border-emerald-800'
                 : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50/80'
             }`}
           >
@@ -683,15 +687,15 @@ export const App: React.FC = () => {
             )}
           </motion.button>
 
-          {/* Nav Item 5: 3-DOTS ("...") MORE MENU BUTTON (STRICTLY ICON ONLY - ZERO TEXT) */}
+          {/* Nav Item 5: 3-DOTS MORE MENU BUTTON */}
           <motion.button
             whileTap={{ scale: 0.88 }}
-            onClick={() => setIsOverflowMenuOpen(true)}
+            onClick={() => setIsMobileMenuOpen(true)}
             title="بیشتر / More Options"
             aria-label="بیشتر"
-            className={`relative flex items-center justify-center py-3.5 px-2 rounded-2xl transition-all ${
-              isOverflowMenuOpen
-                ? 'bg-gradient-to-b from-emerald-600 via-teal-600 to-sky-600 text-white shadow-lg shadow-emerald-600/35 border-b-2 border-emerald-800'
+            className={`relative flex items-center justify-center py-3 px-2 rounded-2xl transition-all ${
+              isMobileMenuOpen
+                ? 'bg-gradient-to-b from-emerald-600 via-teal-600 to-sky-600 text-white shadow-md shadow-emerald-600/35 border-b-2 border-emerald-800'
                 : 'text-slate-600 hover:text-emerald-700 bg-emerald-50/80 border-b-2 border-emerald-200/80 hover:bg-emerald-100/80'
             }`}
           >
@@ -704,9 +708,9 @@ export const App: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* 5. 3-DOTS ANIMATED BOTTOMSHEET & MODAL DIALOG (Luminous Emerald & Sky Theme) */}
+      {/* 5. ANDROID BOTTOMSHEET & MODAL DIALOG */}
       <AnimatePresence>
-        {isOverflowMenuOpen && (
+        {isMobileMenuOpen && (
           <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
             
             {/* Backdrop Blur with Soft Fade */}
@@ -715,57 +719,59 @@ export const App: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm"
-              onClick={() => setIsOverflowMenuOpen(false)}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
             />
 
             {/* BottomSheet Card on Mobile / Centered Modal on Desktop */}
             <motion.div 
-              initial={{ y: "100%", opacity: 0, scale: 0.95 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: "100%", opacity: 0, scale: 0.95 }}
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
               transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border-2 border-emerald-100 overflow-hidden z-10 flex flex-col max-h-[85vh] m-3 sm:m-4"
+              className="relative w-full max-w-lg bg-slate-50 rounded-t-[36px] md:rounded-[32px] shadow-2xl border-t-2 border-x-2 md:border-2 border-emerald-200/90 overflow-hidden z-10 flex flex-col max-h-[88vh] m-0 md:m-4"
             >
-              {/* Top Drag Handle for Android Sheet */}
-              <div className="md:hidden pt-3 pb-1 flex justify-center">
-                <div className="w-12 h-1.5 bg-emerald-200 rounded-full" />
-              </div>
-              
-              {/* Header (3D Metallic Emerald & Sky Gradient) */}
-              <div className="bg-gradient-to-b from-emerald-500 via-emerald-600 to-teal-800 p-5 text-white flex items-center justify-between border-b-4 border-emerald-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),0_8px_16px_rgba(6,95,70,0.3)] relative overflow-hidden rounded-t-[28px]">
+              {/* Header (3D Metallic Emerald & Sky Gradient) with integrated drag handle */}
+              <div className="bg-gradient-to-b from-emerald-500 via-emerald-600 to-teal-800 pt-3 pb-5 px-5 text-white flex flex-col gap-3 border-b-4 border-emerald-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),0_4px_10px_rgba(6,95,70,0.3)] relative overflow-hidden">
+                {/* Top Drag Handle for Android Sheet */}
+                <div className="md:hidden flex justify-center pb-0.5">
+                  <div className="w-12 h-1.5 bg-white/50 rounded-full" />
+                </div>
+
                 {/* 3D Glossy Light Reflection */}
                 <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent pointer-events-none"></div>
 
-                <div className="flex items-center gap-3 relative z-10">
-                  <div className="w-11 h-11 bg-gradient-to-br from-emerald-400 to-teal-700 backdrop-blur-md rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-[0_4px_10px_rgba(0,0,0,0.3),inset_0_2px_3px_rgba(255,255,255,0.6)] border-2 border-emerald-300">
-                    UT
-                  </div>
-                  <div>
-                    <h3 className="font-black text-base drop-shadow-md">{t.appName}</h3>
-                    <div className="flex items-center gap-2 text-xs text-emerald-100 drop-shadow-xs">
-                      <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse shadow-[0_0_8px_#6ee7b7]"></span>
-                      <span className="font-mono uppercase font-bold">{walletType || 'WALLET'}</span>
-                      <span className="text-emerald-200">•</span>
-                      <span className="text-white font-extrabold bg-emerald-900/40 px-2 py-0.5 rounded-full border border-emerald-400/30 text-[10px]">متصل</span>
+                <div className="flex items-center justify-between relative z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 bg-gradient-to-br from-emerald-400 to-teal-700 backdrop-blur-md rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-[0_4px_10px_rgba(0,0,0,0.3),inset_0_2px_3px_rgba(255,255,255,0.6)] border-2 border-emerald-300">
+                      UT
+                    </div>
+                    <div>
+                      <h3 className="font-black text-base drop-shadow-md">{t.appName}</h3>
+                      <div className="flex items-center gap-2 text-[10px] text-emerald-100 drop-shadow-xs">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse shadow-[0_0_8px_#6ee7b7]"></span>
+                        <span className="font-mono uppercase font-bold">{walletType || 'WALLET'}</span>
+                        <span className="text-emerald-200">•</span>
+                        <span className="text-white font-extrabold bg-emerald-900/40 px-2.5 py-0.5 rounded-full border border-emerald-400/30">متصل</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <motion.button 
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setIsOverflowMenuOpen(false)}
-                  className="p-2.5 rounded-2xl bg-black/20 hover:bg-black/30 text-white transition-all shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)] border border-white/20 relative z-10 cursor-pointer"
-                >
-                  <X className="w-5 h-5 drop-shadow-md" />
-                </motion.button>
+                  <motion.button 
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-2.5 rounded-2xl bg-black/20 hover:bg-black/30 text-white transition-all shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)] border border-white/20 relative z-10 cursor-pointer"
+                  >
+                    <X className="w-5 h-5 drop-shadow-md" />
+                  </motion.button>
+                </div>
               </div>
 
               {/* Body Options with Scroll */}
-              <div className="p-5 space-y-4 overflow-y-auto">
+              <div className="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1 pb-10">
                 
                 {/* Account / Hash Key Info Card */}
-                <div className="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200/80 shadow-xs space-y-2">
+                <div className="bg-white p-4 rounded-3xl border border-emerald-100 shadow-sm space-y-2.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-emerald-900 font-bold flex items-center gap-1.5">
                       <Key className="w-3.5 h-3.5 text-emerald-600" />
@@ -774,104 +780,111 @@ export const App: React.FC = () => {
                     <motion.button 
                       whileTap={{ scale: 0.92 }}
                       onClick={copyUserKey}
-                      className="flex items-center gap-1 text-emerald-700 font-black hover:text-emerald-800 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shadow-xs"
+                      className="flex items-center gap-1.5 text-emerald-700 font-black hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 shadow-xs cursor-pointer text-xs transition-colors"
                     >
                       {keyCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{keyCopied ? 'کپی شد' : 'کپی کلید'}</span>
                     </motion.button>
                   </div>
-                  <div className="font-mono text-xs text-slate-800 font-black bg-white p-2.5 rounded-xl border border-emerald-200 break-all select-all text-center tracking-wide" dir="ltr">
+                  <div className="font-mono text-[11px] sm:text-xs text-slate-800 font-black bg-emerald-50/60 p-2.5 rounded-2xl border border-emerald-200/80 break-all select-all text-center tracking-wide" dir="ltr">
                     {user.uniqueKey}
                   </div>
                 </div>
 
                 {/* Total Net Worth Snapshot */}
-                <div className="bg-gradient-to-br from-emerald-50 via-teal-50 to-sky-50 p-4 rounded-2xl border border-emerald-200/80 flex items-center justify-between">
+                <div className="bg-gradient-to-br from-emerald-50 via-teal-50 to-sky-50 p-4 sm:p-5 rounded-3xl border border-emerald-200/80 flex items-center justify-between shadow-sm">
                   <div>
-                    <span className="text-xs font-extrabold text-emerald-800 block mb-0.5">
+                    <span className="text-xs font-extrabold text-emerald-800 block mb-1">
                       {t.totalNetWorth}
                     </span>
-                    <span className="text-xl font-black text-slate-900" dir="ltr">
+                    <span className="text-2xl font-black text-slate-900 tracking-tight" dir="ltr">
                       ${formatNumber(totalNetWorthUSD, lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
-                  <div className="p-2.5 bg-gradient-to-tr from-emerald-600 to-teal-500 text-white rounded-2xl shadow-md shadow-emerald-500/30">
-                    <Wallet className="w-5 h-5" />
+                  <div className="p-3 bg-gradient-to-tr from-emerald-600 to-teal-500 text-white rounded-2xl shadow-md shadow-emerald-500/30">
+                    <Wallet className="w-6 h-6" />
                   </div>
                 </div>
 
                 {/* Quick Actions Grid */}
                 <div>
-                  <span className="text-xs font-black text-slate-500 uppercase tracking-wider block mb-2 px-1">
+                  <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2 px-1">
                     عملیات سریع کیف پول
                   </span>
                   <div className="grid grid-cols-3 gap-2.5">
                     <motion.button
                       whileTap={{ scale: 0.92 }}
                       onClick={() => {
-                        setIsOverflowMenuOpen(false);
+                        setIsMobileMenuOpen(false);
                         setIsBuyOpen(true);
                       }}
-                      className="p-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-2xl border border-emerald-200 flex flex-col items-center gap-1.5 transition-all text-xs font-black"
+                      className="p-3.5 bg-white hover:bg-emerald-50 text-emerald-800 rounded-3xl border border-emerald-100 flex flex-col items-center gap-1.5 transition-all text-xs font-black shadow-sm cursor-pointer"
                     >
-                      <ShoppingCart className="w-5 h-5 text-emerald-600" />
+                      <div className="p-2 bg-emerald-50 rounded-2xl">
+                        <ShoppingCart className="w-5 h-5 text-emerald-600" />
+                      </div>
                       <span>{t.buy}</span>
                     </motion.button>
 
                     <motion.button
                       whileTap={{ scale: 0.92 }}
                       onClick={() => {
-                        setIsOverflowMenuOpen(false);
+                        setIsMobileMenuOpen(false);
                         setIsSwapOpen(true);
                       }}
-                      className="p-3 bg-sky-50 hover:bg-sky-100 text-sky-800 rounded-2xl border border-sky-200 flex flex-col items-center gap-1.5 transition-all text-xs font-black"
+                      className="p-3.5 bg-white hover:bg-sky-50 text-sky-800 rounded-3xl border border-sky-100 flex flex-col items-center gap-1.5 transition-all text-xs font-black shadow-sm cursor-pointer"
                     >
-                      <ArrowRightLeft className="w-5 h-5 text-sky-600" />
+                      <div className="p-2 bg-sky-50 rounded-2xl">
+                        <ArrowRightLeft className="w-5 h-5 text-sky-600" />
+                      </div>
                       <span>{t.swap}</span>
                     </motion.button>
 
                     <motion.button
                       whileTap={{ scale: 0.92 }}
                       onClick={() => {
-                        setIsOverflowMenuOpen(false);
+                        setIsMobileMenuOpen(false);
                         setIsTransferOpen(true);
                       }}
-                      className="p-3 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-2xl border border-teal-200 flex flex-col items-center gap-1.5 transition-all text-xs font-black"
+                      className="p-3.5 bg-white hover:bg-teal-50 text-teal-800 rounded-3xl border border-teal-100 flex flex-col items-center gap-1.5 transition-all text-xs font-black shadow-sm cursor-pointer"
                     >
-                      <Send className="w-5 h-5 text-teal-600" />
+                      <div className="p-2 bg-teal-50 rounded-2xl">
+                        <Send className="w-5 h-5 text-teal-600" />
+                      </div>
                       <span>{t.transfer}</span>
                     </motion.button>
                   </div>
-
-                  <motion.button
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => {
-                      setIsOverflowMenuOpen(false);
-                      setView('chatwallet');
-                    }}
-                    className="w-full mt-2.5 p-3.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 text-white rounded-2xl shadow-md flex items-center justify-center gap-2 font-black text-xs"
-                  >
-                    <MessageSquare className="w-5 h-5" />
-                    <span>ورود به ChatWallet (چت زنده و چت‌بات)</span>
-                  </motion.button>
                 </div>
+
+                {/* API Payment Button */}
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsApiPaymentOpen(true);
+                  }}
+                  className="w-full p-3.5 bg-gradient-to-r from-slate-900 via-teal-950 to-emerald-950 text-white rounded-3xl shadow-md flex items-center justify-center gap-2 font-black text-xs cursor-pointer border border-emerald-800/40"
+                >
+                  <Key className="w-4 h-4 text-emerald-400" />
+                  <span>سامانه API Payment و درگاه بانکی هوشمند</span>
+                </motion.button>
 
                 {/* Language Selection Grid */}
                 <div>
-                  <span className="text-xs font-black text-slate-500 uppercase tracking-wider block mb-2 px-1 flex items-center justify-between">
+                  <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2 px-1 flex items-center justify-between">
                     <span>انتخاب زبان (Languages)</span>
                     <Globe className="w-3.5 h-3.5 text-slate-400" />
                   </span>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {LANGUAGES.map(l => (
                       <motion.button
                         key={l.code}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setLang(l.code)}
-                        className={`flex items-center justify-between p-2.5 rounded-xl border text-xs font-bold transition-all ${
+                        className={`flex items-center justify-between p-3 rounded-2xl border text-xs font-bold transition-all shadow-sm cursor-pointer ${
                           lang === l.code 
                             ? 'bg-emerald-600 text-white border-emerald-700 shadow-md font-black' 
-                            : 'bg-slate-50 hover:bg-emerald-50/50 text-slate-700 border-slate-200'
+                            : 'bg-white hover:bg-emerald-50 text-slate-700 border-slate-200'
                         }`}
                       >
                         <span>{l.name}</span>
@@ -886,26 +899,25 @@ export const App: React.FC = () => {
                   whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     refreshPrices();
-                    setIsOverflowMenuOpen(false);
+                    setIsMobileMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-800 rounded-2xl font-bold text-xs border border-emerald-200 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-emerald-50 text-emerald-800 rounded-3xl font-bold text-xs border border-emerald-200 transition-colors shadow-sm cursor-pointer"
                 >
                   <RefreshCw className={`w-4 h-4 ${isRefreshingPrices ? 'animate-spin text-emerald-600' : 'text-emerald-600'}`} />
-                  <span>بروزرسانی نرخ لحظه‌ای ارزها و فلزات</span>
+                  <span>بروزرسانی نرخ لحظه‌ای ارزها</span>
                 </motion.button>
 
                 {/* Logout Button */}
                 <Button 
                   variant="danger" 
                   fullWidth 
-                  className="py-3 mt-2 shadow-md" 
+                  className="py-3.5 mt-2 shadow-md rounded-3xl" 
                   onClick={handleLogout}
                 >
                   <LogOut className="w-4 h-4" /> {t.logout}
                 </Button>
 
               </div>
-
             </motion.div>
           </div>
         )}

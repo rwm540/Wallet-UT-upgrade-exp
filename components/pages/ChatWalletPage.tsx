@@ -401,7 +401,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
       className="max-w-4xl mx-auto space-y-4 pb-20 px-2 sm:px-4 w-full box-border"
     >
       {/* Header Profile Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-teal-950 rounded-2xl p-4 sm:p-6 text-white shadow-xl border border-emerald-500/20 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-teal-950 rounded-3xl p-4 sm:p-6 text-white shadow-xl border border-emerald-500/20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5 relative z-10">
           <div className="flex items-center gap-3">
@@ -417,8 +417,8 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
             </div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/15 flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-start">
-            <div className="w-6 h-6 rounded-lg bg-emerald-500/30 flex items-center justify-center text-emerald-300 shrink-0">
+          <div className="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/15 flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-start">
+            <div className="w-7 h-7 rounded-xl bg-emerald-500/30 flex items-center justify-center text-emerald-300 shrink-0">
               <PhoneCall className="w-3.5 h-3.5" />
             </div>
             <div>
@@ -430,10 +430,10 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
       </div>
 
       {/* Telegram-style 3 Navigation Tabs */}
-      <div className="bg-white rounded-2xl p-1.5 shadow-sm border border-slate-200/80 grid grid-cols-3 gap-1">
+      <div className="bg-white rounded-3xl p-1.5 shadow-sm border border-slate-200/80 grid grid-cols-3 gap-1.5">
         <button
           onClick={() => { setActiveTab('messages'); setActiveChatPeer(null); }}
-          className={`py-2 px-1 sm:px-3 rounded-xl font-bold text-[11px] sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+          className={`py-2.5 px-1 sm:px-3 rounded-2xl font-bold text-[11px] sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
             activeTab === 'messages'
               ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -445,7 +445,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
 
         <button
           onClick={() => { setActiveTab('contacts'); setActiveChatPeer(null); }}
-          className={`py-2 px-1 sm:px-3 rounded-xl font-bold text-[11px] sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+          className={`py-2.5 px-1 sm:px-3 rounded-2xl font-bold text-[11px] sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
             activeTab === 'contacts'
               ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -457,7 +457,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
 
         <button
           onClick={() => { setActiveTab('apiline'); setActiveChatPeer(null); }}
-          className={`py-2 px-1 sm:px-3 rounded-xl font-bold text-[11px] sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+          className={`py-2.5 px-1 sm:px-3 rounded-2xl font-bold text-[11px] sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
             activeTab === 'apiline'
               ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
               : 'text-slate-600 hover:bg-slate-100'
@@ -469,21 +469,21 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
       </div>
 
       {/* Main Container */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
         {activeChatPeer ? (
           /* Active Chat View */
           <div className="flex flex-col h-[500px] sm:h-[540px]">
             {/* Chat Header */}
-            <div className="bg-slate-50/90 border-b border-slate-200 px-3 sm:px-5 py-3 flex items-center justify-between">
+            <div className="bg-slate-50/90 border-b border-slate-200 px-3 sm:px-5 py-3.5 flex items-center justify-between">
               <div className="flex items-center gap-2.5 min-w-0">
                 <button
                   onClick={() => setActiveChatPeer(null)}
-                  className="w-8 h-8 rounded-xl bg-slate-200/80 hover:bg-slate-300 text-slate-700 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                  className="w-9 h-9 rounded-2xl bg-slate-200/80 hover:bg-slate-300 text-slate-700 flex items-center justify-center transition-all cursor-pointer shrink-0"
                   title="بازگشت"
                 >
                   <ArrowRight className="w-4 h-4" />
                 </button>
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
                   {activePeerName.slice(0, 2)}
                 </div>
                 <div className="min-w-0">
@@ -500,7 +500,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                       setModalName(activePeerName);
                       setIsAddContactModalOpen(true);
                     }}
-                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-1.5 rounded-xl flex items-center gap-1 transition-all cursor-pointer border border-emerald-200"
+                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold px-3 py-1.5 rounded-2xl flex items-center gap-1 transition-all cursor-pointer border border-emerald-200"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">ذخیره مخاطب</span>
@@ -528,7 +528,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                       <span className="text-[9px] font-mono text-slate-400" dir="ltr">{timeStr}</span>
                     </div>
 
-                    <div className={`max-w-[90%] sm:max-w-[70%] rounded-2xl px-3.5 py-2 text-xs sm:text-sm shadow-2xs ${
+                    <div className={`max-w-[90%] sm:max-w-[70%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm shadow-2xs ${
                       isMe 
                         ? 'bg-emerald-600 text-white rounded-tr-none' 
                         : 'bg-white border border-slate-200/80 text-slate-800 rounded-tl-none'
@@ -562,14 +562,14 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                   }
                 }}
                 placeholder="پیام خود را بنویسید..."
-                className="flex-1 bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all font-medium resize-none max-h-28 min-h-[42px]"
+                className="flex-1 bg-slate-100 border border-slate-200 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all font-medium resize-none max-h-28 min-h-[44px]"
               />
 
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 type="submit"
                 disabled={!inputText.trim()}
-                className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1 shadow-md shadow-emerald-600/20 transition-all shrink-0 cursor-pointer h-[42px]"
+                className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white px-5 py-2.5 rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all shrink-0 cursor-pointer h-[44px]"
               >
                 <span>ارسال</span>
                 <Send className="w-3.5 h-3.5 rtl:rotate-180" />
@@ -583,25 +583,25 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
             {/* TAB 1: MESSAGES */}
             {activeTab === 'messages' && (
               <div className="space-y-4 flex-1">
-                {/* Start Chat By Number Form */}
-                <form onSubmit={handleSendDirectMessage} className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+                {/* Start Chat By Number Form (Responsive Android Design - No Button Overflow) */}
+                <form onSubmit={handleSendDirectMessage} className="bg-slate-50 border border-emerald-100 rounded-3xl p-4 sm:p-5 space-y-3 shadow-xs">
                   <h3 className="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-2">
                     <MessageCircle className="w-4 h-4 text-emerald-600" />
                     <span>شروع گفتگو با شماره (بدون نیاز به ذخیره مخاطب)</span>
                   </h3>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2.5">
                     <input
                       type="text"
                       value={directRecipient}
                       onChange={(e) => setDirectRecipient(e.target.value)}
                       placeholder="شماره مقصد (مثلاً +77799123)"
-                      className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full sm:flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 text-xs sm:text-sm font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs"
                       dir="ltr"
                     />
                     <button
                       type="submit"
                       disabled={!directRecipient.trim()}
-                      className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
+                      className="w-full sm:w-auto justify-center bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-40 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-2 shrink-0 active:scale-95"
                     >
                       <Send className="w-4 h-4 rtl:rotate-180" />
                       <span>شروع گفتگو</span>
@@ -612,13 +612,13 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                   </div>
 
                   {directError && (
-                    <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-700 text-xs font-bold">
+                    <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3 text-rose-700 text-xs font-bold">
                       {directError}
                     </div>
                   )}
 
                   {directSuccess && (
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-800 text-xs font-bold">
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-emerald-800 text-xs font-bold">
                       {directSuccess}
                     </div>
                   )}
@@ -629,30 +629,30 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                     <MessageCircle className="w-4 h-4 text-emerald-600" />
                     <span>لیست گفتگوهای فعال</span>
                   </h2>
-                  <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-lg">{chatList.length} گفتگو</span>
+                  <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-xl">{chatList.length} گفتگو</span>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {chatList.map(chat => (
                     <div
                       key={chat.chatNumber}
                       onClick={() => setActiveChatPeer(chat.chatNumber)}
-                      className="p-3 rounded-xl border border-slate-100 hover:border-emerald-300 hover:bg-emerald-50/30 transition-all cursor-pointer flex items-center justify-between gap-2 group"
+                      className="p-3.5 rounded-2xl border border-slate-200/80 hover:border-emerald-300 hover:bg-emerald-50/40 bg-white transition-all cursor-pointer flex items-center justify-between gap-2 group shadow-2xs"
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
                           {chat.name.slice(0, 2)}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <h4 className="font-bold text-slate-800 text-xs sm:text-sm truncate">{chat.name}</h4>
-                            <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md font-bold" dir="ltr">{chat.chatNumber}</span>
+                            <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg font-bold border border-emerald-100" dir="ltr">{chat.chatNumber}</span>
                           </div>
                           <p className="text-[11px] text-slate-500 mt-0.5 truncate">{chat.lastMessage}</p>
                         </div>
                       </div>
 
-                      <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 group-hover:bg-emerald-600 group-hover:text-white px-2.5 py-1.5 rounded-lg transition-all shadow-2xs shrink-0">
+                      <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 group-hover:bg-emerald-600 group-hover:text-white px-3 py-1.5 rounded-xl transition-all shadow-2xs shrink-0 border border-emerald-100 group-hover:border-transparent">
                         باز کردن
                       </span>
                     </div>
@@ -684,7 +684,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                       setModalNote('');
                       setIsAddContactModalOpen(true);
                     }}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-sm transition-all cursor-pointer"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-3.5 py-2 rounded-2xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     <span>افزودن</span>
@@ -695,10 +695,10 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                   {contacts.map(contact => (
                     <div 
                       key={contact.id}
-                      className="p-3 rounded-xl border border-slate-200/80 hover:border-emerald-300 bg-slate-50/40 flex items-center justify-between gap-2 group transition-all"
+                      className="p-3.5 rounded-2xl border border-slate-200/80 hover:border-emerald-300 bg-white flex items-center justify-between gap-2 group transition-all shadow-2xs"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-sky-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
                           {contact.name.slice(0, 2)}
                         </div>
                         <div className="min-w-0">
@@ -711,14 +711,14 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           onClick={() => setActiveChatPeer(contact.chatNumber)}
-                          className="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs"
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition-all cursor-pointer shadow-2xs"
                         >
                           پیام
                         </button>
                         <button
                           onClick={(e) => handleDeleteContact(contact.id, e)}
                           title="حذف مخاطب"
-                          className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-all cursor-pointer"
+                          className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -739,7 +739,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
             {/* TAB 3: API LINES & CREATION */}
             {activeTab === 'apiline' && (
               <div className="space-y-4 py-2 flex-1 w-full">
-                <div className="bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-sky-500/15 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-sky-500/15 border border-emerald-200 rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="space-y-1 text-start w-full">
                     <h2 className="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-emerald-600" />
@@ -752,20 +752,20 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                 </div>
 
                 {/* Create Line Form */}
-                <form onSubmit={handleCreateApiLine} className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+                <form onSubmit={handleCreateApiLine} className="bg-slate-50 border border-slate-200/80 rounded-3xl p-4 sm:p-5 space-y-3">
                   <h3 className="text-xs font-bold text-slate-800">ایجاد خط جدید</h3>
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2.5">
                     <input
                       type="text"
                       value={newLineName}
                       onChange={(e) => setNewLineName(e.target.value)}
                       placeholder="نام دلخواه خط (مثلاً ربات فروشگاه، پشتیبانی...)"
-                      className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+                      className="w-full sm:flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
                     />
                     <button
                       type="submit"
                       disabled={!newLineName.trim()}
-                      className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+                      className="w-full sm:w-auto justify-center bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-40 text-white font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-2 shrink-0 active:scale-95"
                     >
                       <UserPlus className="w-4 h-4" />
                       <span>ایجاد خط (۱۰۰ UT)</span>
@@ -773,13 +773,13 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                   </div>
 
                   {lineCreationError && (
-                    <div className="bg-rose-50 border border-rose-200 rounded-xl p-2.5 text-rose-700 text-xs font-bold">
+                    <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3 text-rose-700 text-xs font-bold">
                       {lineCreationError}
                     </div>
                   )}
 
                   {lineCreationSuccess && (
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-emerald-800 text-xs font-bold">
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-emerald-800 text-xs font-bold">
                       {lineCreationSuccess}
                     </div>
                   )}
@@ -787,7 +787,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
 
                 {/* API Test Status Feedback */}
                 {apiTestStatus && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-blue-800 text-xs font-bold text-center">
+                  <div className="bg-blue-50 border border-blue-200 rounded-2xl p-3 text-blue-800 text-xs font-bold text-center">
                     {apiTestStatus}
                   </div>
                 )}
@@ -801,12 +801,12 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
 
                   <div className="space-y-3">
                     {apiLines.map(line => (
-                      <div key={line.id} className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-2xs space-y-3">
+                      <div key={line.id} className="bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 shadow-2xs space-y-3">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                           <div>
                             <div className="flex items-center gap-2">
                               <h4 className="font-black text-slate-800 text-xs sm:text-sm">{line.name}</h4>
-                              <span className="bg-emerald-50 text-emerald-800 font-mono text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-200" dir="ltr">
+                              <span className="bg-emerald-50 text-emerald-800 font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg border border-emerald-200" dir="ltr">
                                 {line.chatNumber}
                               </span>
                             </div>
@@ -815,7 +815,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                          <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
                             <button
                               onClick={() => {
                                 navigator.clipboard.writeText(line.apiKey);
@@ -835,7 +835,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                             </button>
                             <button
                               onClick={() => setApiTestLine(apiTestLine?.id === line.id ? null : line)}
-                              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl shadow-sm transition-all cursor-pointer flex items-center gap-1"
+                              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl shadow-sm transition-all cursor-pointer flex items-center gap-1"
                             >
                               <Send className="w-3.5 h-3.5 rtl:rotate-180" />
                               <span>{apiTestLine?.id === line.id ? 'بستن آزمایش' : 'تست ارسال API'}</span>
@@ -848,18 +848,18 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
-                            className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-3 pt-3"
+                            className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 pt-3"
                           >
                             <div className="text-[11px] text-slate-600 font-bold">
                               آزمایش ارسال خودکار پیام از طریق API (هزینه هر ارسال: <span className="text-emerald-700">0.01 UT</span>):
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                               <input
                                 type="text"
                                 value={apiRecipient}
                                 onChange={(e) => setApiRecipient(e.target.value)}
                                 placeholder="شماره گیرنده (مثلاً +77799123)"
-                                className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="bg-white border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                                 dir="ltr"
                               />
                               <input
@@ -867,14 +867,14 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                                 value={apiMessageText}
                                 onChange={(e) => setApiMessageText(e.target.value)}
                                 placeholder="متن پیام خودکار..."
-                                className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+                                className="bg-white border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
                               />
                             </div>
                             <div className="flex justify-end">
                               <button
                                 onClick={() => handleSendApiMessage(line, apiRecipient, apiMessageText)}
                                 disabled={!apiRecipient.trim() || !apiMessageText.trim()}
-                                className="bg-teal-600 hover:bg-teal-500 disabled:opacity-40 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-sm transition-all cursor-pointer flex items-center gap-1"
+                                className="bg-teal-600 hover:bg-teal-500 disabled:opacity-40 text-white font-bold text-xs px-4 py-2.5 rounded-2xl shadow-sm transition-all cursor-pointer flex items-center gap-1"
                               >
                                 <span>ارسال از طریق API (کسر 0.01 UT)</span>
                               </button>
@@ -907,16 +907,16 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative bg-white w-full max-w-sm rounded-2xl p-4 sm:p-5 shadow-2xl border-t-4 border-emerald-500 z-10"
+            className="relative bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl border-t-4 border-emerald-500 z-10"
           >
-            <div className="flex justify-between items-center mb-3">
+            <div className="flex justify-between items-center mb-3.5">
               <h3 className="text-sm font-black text-slate-800 flex items-center gap-1.5">
                 <UserPlus className="w-4 h-4 text-emerald-600" />
                 <span>ذخیره مخاطب جدید</span>
               </h3>
               <button 
                 onClick={() => setIsAddContactModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 text-xs"
+                className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 text-xs cursor-pointer"
               >
                 ✕
               </button>
@@ -931,7 +931,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                   onChange={(e) => setModalChatNumber(e.target.value)}
                   placeholder="+777XXXXX"
                   required
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-slate-100 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   dir="ltr"
                 />
               </div>
@@ -944,7 +944,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                   onChange={(e) => setModalName(e.target.value)}
                   placeholder="مثال: علی احمدی"
                   required
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-slate-100 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
@@ -955,7 +955,7 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                   value={modalNote}
                   onChange={(e) => setModalNote(e.target.value)}
                   placeholder="مثال: همکار / دوست"
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-slate-100 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
@@ -963,13 +963,13 @@ export const ChatWalletPage: React.FC<ChatWalletPageProps> = ({ user, t, lang, o
                 <button
                   type="button"
                   onClick={() => setIsAddContactModalOpen(false)}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition-all"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-2xl text-xs transition-all cursor-pointer"
                 >
                   انصراف
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs shadow-sm transition-all"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-2xl text-xs shadow-sm transition-all cursor-pointer"
                 >
                   ذخیره
                 </button>
